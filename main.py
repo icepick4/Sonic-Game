@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 from time import time
-from functions import entity, onFloor, jumpSpeed, jumpPosition, posRestriction
-from random import randint
+from functions import entity, onFloor, jumpSpeed, jumpPosition, posRestriction, enemyRestriction
+from random import randint,uniform
 pygame.init()
 
 #set the window
@@ -23,11 +23,12 @@ sonic3Rect = entity(sonic3Surface.get_rect(topleft=(100,height - 200 - 144)))
 sonic4Surface = pygame.image.load("images/sonic4.gif").convert_alpha()
 sonic4Rect = entity(sonic4Surface.get_rect(topleft=(100,height - 200 - 144)))
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
-sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144)))
+sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)))
 sonicState = 0
 #init du delais d'affichage du gif
-delay = time()
+timeGif = time()
 #init du départ du saut
+
 startJump = time()
 #temps de saut
 timeJump = 0.3
@@ -36,6 +37,10 @@ jumping = False
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,0), (128,height - 200))
 
+#enemies
+enemySurface = pygame.image.load("images/poisson-globe.png").convert_alpha()
+enemies = []
+timeEnemies = time()
 #score
 scoreTimer = time()
 scoreFont = pygame.font.SysFont("Courier New", 50)
@@ -59,44 +64,68 @@ while playing:
                 if onFloor(sonicJumpRect):
                     startJump = time()
                     jumping = True
-                    jumpSpeed(sonicJumpRect, 1200)
+                    jumpSpeed(sonicJumpRect, (0,1200))
+    delayEnemies = time() - timeEnemies
+    if len(enemies) < 2 and delayEnemies >  uniform(0.9,1.5):
+        randomSpawn = randint(1,6)
+        if randomSpawn == 1:
+            enemies.append(entity(enemySurface.get_rect(topright=(width, height - 200 - 150))))
+        else:
+            enemies.append(entity(enemySurface.get_rect(topright=(width, height - 200))))
+        timeEnemies = time()
+    jumpTime = timer.tick(120) / 1000
     score = int(round((time() - scoreTimer) * 10,0))
-    scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))               
+    scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))  
     screen.fill((255,255,255))
     screen.blit(endSurface,endRect)
     screen.blit(scoreSurface,scoreRect)
-    jumpTime = timer.tick(120) / 1000
+    for i in range(len(enemies)):
+        try:
+            if enemies[i]['speed'] == (0,0):
+                jumpSpeed(enemies[i],(700,0))
+            jumpPosition(enemies[i], jumpTime)
+            print(sonicJumpRect['rect'])
+            if enemies[i]['rect'].colliderect(sonicJumpRect['rect']):
+                sonic1Rect['hp'] -=1
+                enemies.pop(i)
+            elif enemyRestriction(enemies[i]):
+                enemies.pop(i)
+            screen.blit(enemySurface, enemies[i]['rect'])
+        except:
+            pass
+
     pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
     if time() - startJump < timeJump:
         jumpPosition(sonicJumpRect, jumpTime)
     else:
-        jumpSpeed(sonicJumpRect, -1200)
+        jumpSpeed(sonicJumpRect, (0,-1200))
         startJump = time()
     posRestriction(sonicJumpRect, sonicRect)
-    if sonicJumpRect['speed'] == 0:
+    
+    if sonicJumpRect['speed'][1] == 0:
         jumping = False
     if jumping:
-        sonicJumpRect['speed'] -= 2
+        sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 12)
         screen.blit(sonicJumpSurface, sonicJumpRect['rect'])
     else:
         #affichage du gif à la main
-        gifDelay = time() - delay
-        if sonicState == 0 and gifDelay > 0.05:
+        delayGif = time() - timeGif
+        if sonicState == 0 and delayGif > 0.05:
             screen.blit(sonic1Surface,sonic1Rect['rect'])
             sonicState = 1
-            delay = time()
-        elif sonicState == 1  and gifDelay > 0.05:
+            timeGif = time()
+        elif sonicState == 1  and delayGif > 0.05:
             screen.blit(sonic2Surface,sonic2Rect['rect'])
             sonicState = 2
-            delay = time()
-        elif sonicState == 2  and gifDelay > 0.05:
+            timeGif = time()
+        elif sonicState == 2  and delayGif > 0.05:
             screen.blit(sonic3Surface,sonic3Rect['rect'])
             sonicState = 3
-            delay = time()
-        elif sonicState == 3 and gifDelay > 0.05:
+            timeGif = time()
+        elif sonicState == 3 and delayGif > 0.05:
             screen.blit(sonic4Surface,sonic4Rect['rect'])
             sonicState = 0
-            delay = time()
+            timeGif = time()
         else:
             choice = randint(1,4)
             if choice == 1:
@@ -111,6 +140,7 @@ while playing:
             else:
                 screen.blit(sonic4Surface,sonic4Rect['rect'])
                 sonicState = 4
+
     pygame.display.flip()
 pygame.quit()
 
