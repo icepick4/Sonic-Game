@@ -25,14 +25,22 @@ sonic4Rect = entity(sonic4Surface.get_rect(topleft=(100,height - 200 - 144)))
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144)))
 sonicState = 0
+#init du delais d'affichage du gif
 delay = time()
+#init du départ du saut
 startJump = time()
+#temps de saut
 timeJump = 0.3
+#état de saut
 jumping = False
+#rect qui restreint le personnage
 sonicRect = pygame.Rect((100,0), (128,height - 200))
-#grass
-#grassSurface = pygame.image.load("images/grass.png").convert_alpha()
-#grassRect = grassSurface.get_rect(topleft=(0,0))
+
+#score
+scoreTimer = time()
+scoreFont = pygame.font.SysFont("Courier New", 50)
+scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
+scoreRect = scoreSurface.get_rect(midtop=(width/2, 100))
 #bouton pour fermer la fenetre
 endFont = pygame.font.SysFont("Courier New", 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
@@ -52,8 +60,11 @@ while playing:
                     startJump = time()
                     jumping = True
                     jumpSpeed(sonicJumpRect, 1200)
-    screen.fill((255,255,0))
+    score = int(round((time() - scoreTimer) * 10,0))
+    scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))               
+    screen.fill((255,255,255))
     screen.blit(endSurface,endRect)
+    screen.blit(scoreSurface,scoreRect)
     jumpTime = timer.tick(120) / 1000
     pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
     if time() - startJump < timeJump:
