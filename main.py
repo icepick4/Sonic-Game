@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from time import time
-from functions import entity, onFloor, jumpSpeed, jumpPosition, posRestriction, enemyRestriction
+from functions import entity, onFloor, changeSpeed, changePosition, sonicPosRestriction, enemyRestriction
 from random import randint,uniform
 pygame.init()
 
@@ -14,11 +14,11 @@ height = windowSize[1]
 #timer pour obtenir les ticks
 timer = pygame.time.Clock()
 
-#variable qui maintient le while
+#variable qui maintient le while du jeu
 playing = True
 
-
 #personnage
+#tableau des états de sonic : tab[0][i] -> état de saut, tab[1][i] -> état de standing
 statesSonic = [[0,0,0,0],[0,0]]
 statesSonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
 sonic1Rect = entity(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
@@ -32,12 +32,12 @@ sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144
 
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,0), (128,height - 200))
+
 #état qui définie quel image du gif on affiche
 sonicState = 0
 sonicStandingState = 0
 #init du delais d'affichage du gif
 timeGif = time()
-
 
 #init du départ du saut
 startJump = time()
@@ -48,37 +48,37 @@ jumping = False
 preJump = False
 #init des coeurs
 heart3Surface = pygame.image.load("images/damage3.png").convert_alpha()
-heart3Rect = heart3Surface.get_rect(topleft=(65,65))
 heart2Surface = pygame.image.load("images/damage2.png").convert_alpha()
-heart2Rect = heart2Surface.get_rect(topleft=(65,65))
 heart1Surface = pygame.image.load("images/damage1.png").convert_alpha()
-heart1Rect = heart1Surface.get_rect(topleft=(65,65))
+heartRect = heart1Surface.get_rect(topleft=(65,65))
 
 #init des enemies
 enemySurface = pygame.image.load("images/ennemie.png").convert_alpha()
 enemy2Surface = pygame.image.load("images/bird.png").convert_alpha()
 enemies = []
-timeEnemies = time()
-
+timeSpawn = time()
 #état de dégat pour effet visuel (fond rouge)
 damage = False
 damageTime = time()
 #état qui définit si on a perdu ou non
 lost = True
-timeSpawn = time()
-#affichage du score du last score et du best score
+
+#init du score, du bestscore, et du lastscore
+score = 0
+bestScore = 0
 scoreTimer = time()
 scoreFont = pygame.font.SysFont("Courier New", 50)
+restartFont = pygame.font.SysFont("Courier New", 75)
 scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
 scoreRect = scoreSurface.get_rect(midtop=(width/2, 125))
 lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
 lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 50))
-bestScore = 0
 bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
 bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 0))
-restartSurface = scoreFont.render("PRESS SPACE TO START", True, (255,10,10))
+restartSurface = restartFont.render("PRESS SPACE TO START", True, (255,10,10))
 restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
-score = 0
+
+
 #bouton pour fermer la fenetre
 endFont = pygame.font.SysFont("Courier New", 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
@@ -98,7 +98,7 @@ while playing:
                 if onFloor(sonicJumpRect):
                     startJump = time()
                     jumping = True
-                    jumpSpeed(sonicJumpRect, (0,1500))
+                    changeSpeed(sonicJumpRect, (0,1500))
                     jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     jumpSound.play()
                     jumpSound.set_volume(0.03)
@@ -118,19 +118,16 @@ while playing:
     #     if onFloor(sonicJumpRect):
     #         startJump = time()
     #         jumping = True
-    #         jumpSpeed(sonicJumpRect, (0,1450))
+    #         changeSpeed(sonicJumpRect, (0,1450))
     #         jumpSound = pygame.mixer.Sound("sons/jump.mp3")
     #         jumpSound.play()
     #         jumpSound.set_volume(0.03)
     #         preJump = False
-    
-    #si on a pas perdu on affiche le score actuel, sinon le last score
-    if not lost:
-        score = int(round((time() - scoreTimer) * 10,0))
-        scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))
-    else:
-        scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
 
+    ################
+    #SPAWN DES MOBS#
+    ################
+    #on fait spawn les mobs, avec un délais qui empêche les situations impossibles
     mobsSpeed = 900 + (score * 1.5)
     randomSpawn2 = uniform(400, height - 200 - 144)
     delayMobs = 150 * 4/mobsSpeed
@@ -143,10 +140,13 @@ while playing:
             enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn2))))
             enemies[len(enemies)-1]['hp'] = 666
         timeSpawn = time()
-    #tick de la frame
-    jumpTime = timer.tick(120) / 1000   
-    
 
+    #tick de la frame
+    tick = timer.tick(120) / 1000   
+    
+    ############
+    #LES DEGATS#
+    ############
     #on affiche l'effet visuel de dégats(fond rouge) pendant 0.25s
     damageDelay = time() - damageTime
     if damage and damageDelay < 0.25:  
@@ -155,19 +155,21 @@ while playing:
         screen.fill((255,255,255))
         damageTime = time()
         damage = False
-
     #affichage du coeur en fonction des pv de sonic
     if sonic1Rect['hp'] == 3:
-        screen.blit(heart3Surface,heart1Rect)
+        screen.blit(heart3Surface,heartRect)
     elif sonic1Rect['hp'] == 2:
-        screen.blit(heart2Surface,heart2Rect)
+        screen.blit(heart2Surface,heartRect)
     else:
-        screen.blit(heart1Surface,heart3Rect)
+        screen.blit(heart1Surface,heartRect)
 
+    ##############
+    #LES ENNEMIES#
+    ##############
     for i in range(len(enemies)):
         if enemies[i-1]['speed'] == (0,0):
-            jumpSpeed(enemies[i-1],(mobsSpeed,0))
-        jumpPosition(enemies[i-1], jumpTime)
+            changeSpeed(enemies[i-1],(mobsSpeed,0))
+        changePosition(enemies[i-1], tick)
         #si un ennemie touche sonic ...
         if enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']):
             damageSound = pygame.mixer.Sound("sons/damage.mp3")
@@ -176,6 +178,7 @@ while playing:
             damage = True
             sonic1Rect['hp'] -=1
             enemies.pop(i-1)
+        #si un ennemie atteind le mur
         elif enemyRestriction(enemies[i-1]):
             enemies.pop(i-1)
         if enemies[i-1]['hp'] == 44:
@@ -183,15 +186,31 @@ while playing:
         else:
             screen.blit(enemy2Surface,enemies[i-1]['rect'])
     
+    ############
+    #LES TEXTES#
+    ############
     screen.blit(endSurface,endRect)
     screen.blit(scoreSurface,scoreRect)
     screen.blit(lastScoreSurface,lastScoreRect)
     screen.blit(bestScoreSurface,bestScoreRect)
 
+    ############
+    #LES SCORES#
+    ############
+    #si on a pas perdu on affiche le score actuel, sinon le last score
+    if not lost:
+        score = int(round((time() - scoreTimer) * 10,0))
+        scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))
+    else:
+        scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
     if bestScore < score :
         bestScore = score
         bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (255,25,25))
-    #on a perdu
+
+
+    ############
+    #ON A PERDU#
+    ############
     if sonic1Rect['hp'] == 0:
         for i in range(len(enemies)):
             enemies.pop(0)
@@ -200,19 +219,29 @@ while playing:
         lastScoreSurface = scoreFont.render("Last score : {0}".format(lastScore), True, (0,0,0))
         sonic1Rect['hp'] = 3
         
-    
+    #herbe
     pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
+
+    #################
+    #GESTION DU SAUT#
+    #################
+    #si on est en cours de saut -> on change la position, sinon on redescend
     if time() - startJump < timeJump:
-        jumpPosition(sonicJumpRect, jumpTime)
+        changePosition(sonicJumpRect, tick)
     else:
-        jumpSpeed(sonicJumpRect, (0,-1500))
+        changeSpeed(sonicJumpRect, (0,-1500))
         startJump = time()
+    
+    ####################
+    #AFFICHAGE DU PERSO#
+    ####################
+
     #on restreint les positions de sonic
-    posRestriction(sonicJumpRect, sonicRect)
+    sonicPosRestriction(sonicJumpRect, sonicRect)
     #si la speed est passé à 0 -> le saut n'est plus actif
     if sonicJumpRect['speed'][1] == 0:
         jumping = False
-    
+
     #si on saute on affiche sonicJump
     if jumping:
         sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 15)

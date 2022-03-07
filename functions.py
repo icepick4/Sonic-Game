@@ -18,12 +18,12 @@ def entity(rect):
             }
     return entity
     
-def jumpSpeed(entity, acceleration):
+def changeSpeed(entity, acceleration):
     speedX, speedY = entity['speed']
     aX, aY = acceleration
     entity['speed'] = (speedX + aX, speedY + aY)
 
-def jumpPosition(entity,time):
+def changePosition(entity,time):
     speedX, speedY = entity['speed']
     x,y = entity['position']
     x-= speedX * time
@@ -31,7 +31,7 @@ def jumpPosition(entity,time):
     entity['position'] = (x,y)
     entity['rect'].bottomleft = entity['position']
 
-def posRestriction(entity,zone):
+def sonicPosRestriction(entity,zone):
     x,y = entity['position']
     h = entity['rect'].size[1]
     if y + h > zone.bottom:
