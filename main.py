@@ -43,7 +43,7 @@ startJump = time()
 timeJump = 0.3
 #état de saut
 jumping = False
-
+preJump = False
 #init des coeurs
 heart3Surface = pygame.image.load("images/damage3.png").convert_alpha()
 heart3Rect = heart3Surface.get_rect(topleft=(65,65))
@@ -63,7 +63,7 @@ damage = False
 damageTime = time()
 #état qui définit si on a perdu ou non
 lost = False
-
+timeSpawn = time()
 #affichage du score du last score et du best score
 scoreTimer = time()
 scoreFont = pygame.font.SysFont("Courier New", 50)
@@ -97,39 +97,27 @@ while playing:
                     jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     jumpSound.play()
                     jumpSound.set_volume(0.03)
+                else:
+                    preJump = True
                 #on a perdu -> on recommence une partie
                 if lost:
                     lost = False
                     scoreTimer = time()
-                    score = 0
+                    score = 0            
         elif event.type == KEYUP:
             if event.key == K_SPACE:
                 sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
 
-    #score et bouton close
-    #remplissage des ennemies
-    delayEnemies = time() - timeEnemies
-    if len(enemies) < 3 and delayEnemies > uniform(0.6,1.6) and not lost:
-        randomSpawn = randint(1,6)
-        randomMob = randint(1,2)
-        if randomSpawn == 1:
-            if randomMob == 1:
-                enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200 - sonic1Surface.get_size()[1]))))
-                enemies[len(enemies)-1]['hp'] = 44
-            else:
-                enemies.append(entity(enemy2Surface.get_rect(topleft=(width, height - 200 - sonic1Surface.get_size()[1]))))
-                enemies[len(enemies)-1]['hp'] = 666
-        else:
-            if randomMob == 1:
-                enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200))))
-                enemies[len(enemies)-1]['hp'] = 44
-            else:
-                enemies.append(entity(enemy2Surface.get_rect(topleft=(width, height - 200))))
-                enemies[len(enemies)-1]['hp'] = 666
-        timeEnemies = time()
-
-    #tick de la frame
-    jumpTime = timer.tick(120) / 1000
+    #si un prejump a été lancé, on fait un jump
+    if preJump:
+        if onFloor(sonicJumpRect):
+            startJump = time()
+            jumping = True
+            jumpSpeed(sonicJumpRect, (0,1450))
+            jumpSound = pygame.mixer.Sound("sons/jump.mp3")
+            jumpSound.play()
+            jumpSound.set_volume(0.03)
+            preJump = False
     
     #si on a pas perdu on affiche le score actuel, sinon le last score
     if not lost:
@@ -137,6 +125,34 @@ while playing:
         scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))
     else:
         scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
+
+    #score et bouton close
+    #remplissage des ennemies
+    # if len(enemies) < 4 and delayEnemies > uniform(0.6,1.6) and not lost:
+    #     randomSpawn = uniform(400,height - 200)
+    #     randomMob = randint(1,2)
+    #     if randomMob == 1:
+    #         enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn))))
+    #         enemies[len(enemies)-1]['hp'] = 44
+    #     else:
+    #         enemies.append(entity(enemy2Surface.get_rect(topleft=(width, randomSpawn))))
+    #         enemies[len(enemies)-1]['hp'] = 666
+    #     timeEnemies = time()
+
+    mobsSpeed = 900 + (score * 1.5)
+    randomSpawn = uniform(width / 2,height - 200)
+    randomSpawn2 = uniform(400, height - 200 - 144)
+    delayMobs = 150 * 4/mobsSpeed
+    if time() >= timeSpawn+delayMobs and not lost:
+        rand = randint(1,2)
+        if rand == 1:
+            enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn))))
+        else:
+            enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn2))))
+        timeSpawn = time()
+    #tick de la frame
+    jumpTime = timer.tick(120) / 1000   
+    
 
     #on affiche l'effet visuel (fond rouge) pendant 0.25s
     damageDelay = time() - damageTime
@@ -157,7 +173,7 @@ while playing:
 
     for i in range(len(enemies)):
         if enemies[i-1]['speed'] == (0,0):
-            jumpSpeed(enemies[i-1],(900 + (score * 1.5),0))
+            jumpSpeed(enemies[i-1],(mobsSpeed,0))
         jumpPosition(enemies[i-1], jumpTime)
         #si un ennemie touche sonic ...
         if enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']):
