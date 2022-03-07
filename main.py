@@ -19,20 +19,22 @@ playing = True
 
 
 #personnage
-sonic1Surface = pygame.image.load("images/sonic1.gif").convert_alpha()
-sonic1Rect = entity(sonic1Surface.get_rect(topleft=(100,height - 200 - 144)))
-sonic2Surface = pygame.image.load("images/sonic2.gif").convert_alpha()
-sonic2Rect = entity(sonic2Surface.get_rect(topleft=(100,height - 200 - 144)))
-sonic3Surface = pygame.image.load("images/sonic3.gif").convert_alpha()
-sonic3Rect = entity(sonic3Surface.get_rect(topleft=(100,height - 200 - 144)))
-sonic4Surface = pygame.image.load("images/sonic4.gif").convert_alpha()
-sonic4Rect = entity(sonic4Surface.get_rect(topleft=(100,height - 200 - 144)))
+statesSonic = [[0,0,0,0],[0,0]]
+statesSonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
+sonic1Rect = entity(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
+statesSonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
+statesSonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
+statesSonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
+statesSonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
+statesSonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)))
+
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,0), (128,height - 200))
 #état qui définie quel image du gif on affiche
 sonicState = 0
+sonicStandingState = 0
 #init du delais d'affichage du gif
 timeGif = time()
 
@@ -53,8 +55,8 @@ heart1Surface = pygame.image.load("images/damage1.png").convert_alpha()
 heart1Rect = heart1Surface.get_rect(topleft=(65,65))
 
 #init des enemies
-enemySurface = pygame.image.load("images/poisson-globe.png").convert_alpha()
-enemy2Surface = pygame.image.load("images/league.png").convert_alpha()
+enemySurface = pygame.image.load("images/ennemie.png").convert_alpha()
+enemy2Surface = pygame.image.load("images/bird.png").convert_alpha()
 enemies = []
 timeEnemies = time()
 
@@ -93,31 +95,31 @@ while playing:
                 if onFloor(sonicJumpRect):
                     startJump = time()
                     jumping = True
-                    jumpSpeed(sonicJumpRect, (0,1450))
+                    jumpSpeed(sonicJumpRect, (0,1500))
                     jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     jumpSound.play()
                     jumpSound.set_volume(0.03)
-                else:
-                    preJump = True
+                # else:
+                #     preJump = True
                 #on a perdu -> on recommence une partie
                 if lost:
                     lost = False
                     scoreTimer = time()
-                    score = 0            
+                    score = 0           
         elif event.type == KEYUP:
             if event.key == K_SPACE:
-                sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
+                sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 1000)
 
     #si un prejump a été lancé, on fait un jump
-    if preJump:
-        if onFloor(sonicJumpRect):
-            startJump = time()
-            jumping = True
-            jumpSpeed(sonicJumpRect, (0,1450))
-            jumpSound = pygame.mixer.Sound("sons/jump.mp3")
-            jumpSound.play()
-            jumpSound.set_volume(0.03)
-            preJump = False
+    # if preJump:
+    #     if onFloor(sonicJumpRect):
+    #         startJump = time()
+    #         jumping = True
+    #         jumpSpeed(sonicJumpRect, (0,1450))
+    #         jumpSound = pygame.mixer.Sound("sons/jump.mp3")
+    #         jumpSound.play()
+    #         jumpSound.set_volume(0.03)
+    #         preJump = False
     
     #si on a pas perdu on affiche le score actuel, sinon le last score
     if not lost:
@@ -140,15 +142,16 @@ while playing:
     #     timeEnemies = time()
 
     mobsSpeed = 900 + (score * 1.5)
-    randomSpawn = uniform(width / 2,height - 200)
     randomSpawn2 = uniform(400, height - 200 - 144)
     delayMobs = 150 * 4/mobsSpeed
     if time() >= timeSpawn+delayMobs and not lost:
         rand = randint(1,2)
         if rand == 1:
-            enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn))))
+            enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200))))
+            enemies[len(enemies)-1]['hp'] = 44
         else:
             enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn2))))
+            enemies[len(enemies)-1]['hp'] = 666
         timeSpawn = time()
     #tick de la frame
     jumpTime = timer.tick(120) / 1000   
@@ -211,7 +214,7 @@ while playing:
     if time() - startJump < timeJump:
         jumpPosition(sonicJumpRect, jumpTime)
     else:
-        jumpSpeed(sonicJumpRect, (0,-1450))
+        jumpSpeed(sonicJumpRect, (0,-1500))
         startJump = time()
     #on restreint les positions de sonic
     posRestriction(sonicJumpRect, sonicRect)
@@ -223,39 +226,51 @@ while playing:
     if jumping:
         sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 15)
         screen.blit(sonicJumpSurface, sonicJumpRect['rect'])
-    else:
+    elif not lost:
         #affichage du gif à la main
+        screen.blit(statesSonic[0][sonicState],(100,height - 200 - 144))
         delayGif = time() - timeGif
-        if sonicState == 0 and delayGif > 0.05:
-            screen.blit(sonic1Surface,sonic1Rect['rect'])
-            sonicState = 1
+        if delayGif > 0.03:       
+            sonicState += 1
             timeGif = time()
-        elif sonicState == 1  and delayGif > 0.05:
-            screen.blit(sonic2Surface,sonic2Rect['rect'])
-            sonicState = 2
+        # elif sonicState == 1  and delayGif > 0.05:
+        #     screen.blit(sonic2Surface,sonic2Rect['rect'])
+        #     sonicState = 2
+        #     timeGif = time()
+        # elif sonicState == 2  and delayGif > 0.05:
+        #     screen.blit(sonic3Surface,sonic3Rect['rect'])
+        #     sonicState = 3
+        #     timeGif = time()
+        # elif sonicState == 3 and delayGif > 0.05:
+        #     screen.blit(sonic4Surface,sonic4Rect['rect'])
+        #     sonicState = 0
+        #     timeGif = time()
+        # else:
+        #     choice = randint(1,4)
+        #     if choice == 1:
+        #         screen.blit(sonic1Surface,sonic1Rect['rect'])
+        #         sonicState = 1
+        #     elif choice == 2:
+        #         screen.blit(sonic2Surface,sonic2Rect['rect'])
+        #         sonicState = 2
+        #     elif choice == 3:
+        #         screen.blit(sonic3Surface,sonic3Rect['rect'])
+        #         sonicState = 3
+        #     else:
+        #         screen.blit(sonic4Surface,sonic4Rect['rect'])
+        #         sonicState = 4
+    else:
+        screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - 144))
+        delayGif = time() - timeGif
+        if delayGif > 0.3:
+            sonicStandingState += 1
             timeGif = time()
-        elif sonicState == 2  and delayGif > 0.05:
-            screen.blit(sonic3Surface,sonic3Rect['rect'])
-            sonicState = 3
-            timeGif = time()
-        elif sonicState == 3 and delayGif > 0.05:
-            screen.blit(sonic4Surface,sonic4Rect['rect'])
-            sonicState = 0
-            timeGif = time()
-        else:
-            choice = randint(1,4)
-            if choice == 1:
-                screen.blit(sonic1Surface,sonic1Rect['rect'])
-                sonicState = 1
-            elif choice == 2:
-                screen.blit(sonic2Surface,sonic2Rect['rect'])
-                sonicState = 2
-            elif choice == 3:
-                screen.blit(sonic3Surface,sonic3Rect['rect'])
-                sonicState = 3
-            else:
-                screen.blit(sonic4Surface,sonic4Rect['rect'])
-                sonicState = 4
+        
+                
+    if sonicState == 4:
+        sonicState = 0
+    if sonicStandingState == 2:
+        sonicStandingState = 0
     pygame.display.flip()
 pygame.quit()
 
