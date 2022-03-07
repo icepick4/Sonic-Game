@@ -64,7 +64,7 @@ timeEnemies = time()
 damage = False
 damageTime = time()
 #état qui définit si on a perdu ou non
-lost = False
+lost = True
 timeSpawn = time()
 #affichage du score du last score et du best score
 scoreTimer = time()
@@ -74,8 +74,11 @@ scoreRect = scoreSurface.get_rect(midtop=(width/2, 125))
 lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
 lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 50))
 bestScore = 0
-bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (255,25,25))
+bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
 bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 0))
+restartSurface = scoreFont.render("PRESS SPACE TO START", True, (255,10,10))
+restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
+score = 0
 #bouton pour fermer la fenetre
 endFont = pygame.font.SysFont("Courier New", 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
@@ -128,19 +131,6 @@ while playing:
     else:
         scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
 
-    #score et bouton close
-    #remplissage des ennemies
-    # if len(enemies) < 4 and delayEnemies > uniform(0.6,1.6) and not lost:
-    #     randomSpawn = uniform(400,height - 200)
-    #     randomMob = randint(1,2)
-    #     if randomMob == 1:
-    #         enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn))))
-    #         enemies[len(enemies)-1]['hp'] = 44
-    #     else:
-    #         enemies.append(entity(enemy2Surface.get_rect(topleft=(width, randomSpawn))))
-    #         enemies[len(enemies)-1]['hp'] = 666
-    #     timeEnemies = time()
-
     mobsSpeed = 900 + (score * 1.5)
     randomSpawn2 = uniform(400, height - 200 - 144)
     delayMobs = 150 * 4/mobsSpeed
@@ -157,7 +147,7 @@ while playing:
     jumpTime = timer.tick(120) / 1000   
     
 
-    #on affiche l'effet visuel (fond rouge) pendant 0.25s
+    #on affiche l'effet visuel de dégats(fond rouge) pendant 0.25s
     damageDelay = time() - damageTime
     if damage and damageDelay < 0.25:  
         screen.fill((255,100,100))
@@ -197,6 +187,7 @@ while playing:
     screen.blit(scoreSurface,scoreRect)
     screen.blit(lastScoreSurface,lastScoreRect)
     screen.blit(bestScoreSurface,bestScoreRect)
+
     if bestScore < score :
         bestScore = score
         bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (255,25,25))
@@ -222,51 +213,28 @@ while playing:
     if sonicJumpRect['speed'][1] == 0:
         jumping = False
     
-    #si on saute on affiche sonicJump, sinon le gif
+    #si on saute on affiche sonicJump
     if jumping:
         sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 15)
         screen.blit(sonicJumpSurface, sonicJumpRect['rect'])
+    #si on a pas perdu on affiche le gif sonic qui court
     elif not lost:
         #affichage du gif à la main
         screen.blit(statesSonic[0][sonicState],(100,height - 200 - 144))
         delayGif = time() - timeGif
-        if delayGif > 0.03:       
+        if delayGif > 0.1 - score / 10000:       
             sonicState += 1
             timeGif = time()
-        # elif sonicState == 1  and delayGif > 0.05:
-        #     screen.blit(sonic2Surface,sonic2Rect['rect'])
-        #     sonicState = 2
-        #     timeGif = time()
-        # elif sonicState == 2  and delayGif > 0.05:
-        #     screen.blit(sonic3Surface,sonic3Rect['rect'])
-        #     sonicState = 3
-        #     timeGif = time()
-        # elif sonicState == 3 and delayGif > 0.05:
-        #     screen.blit(sonic4Surface,sonic4Rect['rect'])
-        #     sonicState = 0
-        #     timeGif = time()
-        # else:
-        #     choice = randint(1,4)
-        #     if choice == 1:
-        #         screen.blit(sonic1Surface,sonic1Rect['rect'])
-        #         sonicState = 1
-        #     elif choice == 2:
-        #         screen.blit(sonic2Surface,sonic2Rect['rect'])
-        #         sonicState = 2
-        #     elif choice == 3:
-        #         screen.blit(sonic3Surface,sonic3Rect['rect'])
-        #         sonicState = 3
-        #     else:
-        #         screen.blit(sonic4Surface,sonic4Rect['rect'])
-        #         sonicState = 4
+    #sinon on affiche sonic standing
     else:
         screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - 144))
+        screen.blit(restartSurface,restartRect)
         delayGif = time() - timeGif
         if delayGif > 0.3:
             sonicStandingState += 1
             timeGif = time()
         
-                
+    #fin des états des gifs             
     if sonicState == 4:
         sonicState = 0
     if sonicStandingState == 2:
