@@ -53,7 +53,7 @@ heart1Surface = pygame.image.load("images/damage1.png").convert_alpha()
 heartRect = heart1Surface.get_rect(topleft=(65,65))
 
 #init des enemies
-enemySurface = pygame.image.load("images/ennemie.png").convert_alpha()
+enemySurface = pygame.image.load("images/fire.png").convert_alpha()
 enemy2Surface = pygame.image.load("images/bird.png").convert_alpha()
 enemies = []
 timeSpawn = time()
@@ -102,16 +102,21 @@ while playing:
                     jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     jumpSound.play()
                     jumpSound.set_volume(0.03)
+                else:
+                    #if sonicJumpRect['speed'][1] < 0:
+                    print("je descends")
+                    sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 1000)
                 # else:
                 #     preJump = True
                 #on a perdu -> on recommence une partie
                 if lost:
                     lost = False
                     scoreTimer = time()
-                    score = 0           
+                    score = 0   
+                
         elif event.type == KEYUP:
             if event.key == K_SPACE:
-                sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 1000)
+                sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
 
     #si un prejump a été lancé, on fait un jump
     # if preJump:
@@ -168,7 +173,10 @@ while playing:
     ##############
     for i in range(len(enemies)):
         if enemies[i-1]['speed'] == (0,0):
-            changeSpeed(enemies[i-1],(mobsSpeed,0))
+            if enemies[i-1]['hp'] == 44:
+                changeSpeed(enemies[i-1],(mobsSpeed,0))
+            else:
+                changeSpeed(enemies[i-1],(mobsSpeed,randint(-500,0)))
         changePosition(enemies[i-1], tick)
         #si un ennemie touche sonic ...
         if enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']):

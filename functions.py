@@ -14,7 +14,8 @@ def entity(rect):
     entity={'rect': rect,
             'speed': (0,0),
             'position': rect.topleft,
-            'hp': 3
+            'hp': 3,
+            'weight': 294
             }
     return entity
     
