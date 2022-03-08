@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 from time import time
-from functions import entity, onFloor, changeSpeed, changePosition, sonicPosRestriction, enemyRestriction
-from random import randint,uniform
+from functions import entity, onFloor, changeSpeed, changePosition, sonicPosRestriction, enemyRestriction, animateGif
+from random import randint,uniform, choice
 pygame.init()
 
 #set the window
@@ -21,14 +21,14 @@ playing = True
 #tableau des états de sonic : tab[0][i] -> état de saut, tab[1][i] -> état de standing
 statesSonic = [[0,0,0,0],[0,0]]
 statesSonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
-sonic1Rect = entity(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
+sonic1Rect = entity(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)), "sonic")
 statesSonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
 statesSonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
 statesSonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
 statesSonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
 statesSonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
-sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)))
+sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)), "sonicJumping")
 
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,0), (128,height - 200))
@@ -38,7 +38,8 @@ sonicState = 0
 sonicStandingState = 0
 #init du delais d'affichage du gif
 timeGif = time()
-
+timeGifDuck = time()
+timeGifCharac = time()
 #init du départ du saut
 startJump = time()
 #temps de saut
@@ -53,10 +54,17 @@ heart1Surface = pygame.image.load("images/damage1.png").convert_alpha()
 heartRect = heart1Surface.get_rect(topleft=(65,65))
 
 #init des enemies
-enemySurface = pygame.image.load("images/fire.png").convert_alpha()
-enemy2Surface = pygame.image.load("images/bird.png").convert_alpha()
+enemySurface = pygame.image.load("images/spike.png").convert_alpha()
+enemyBirdSurface = pygame.image.load("images/bird.png").convert_alpha()
 enemies = []
 timeSpawn = time()
+
+statesDuck = [0,0]
+statesDuck[0] = pygame.image.load("images/duck1.png").convert_alpha()
+statesDuck[1] = pygame.image.load("images/duck2.png").convert_alpha()
+duckState = 0
+
+rockSurface = pygame.image.load("images/rock.png").convert_alpha()
 #état de dégat pour effet visuel (fond rouge)
 damage = False
 damageTime = time()
@@ -98,14 +106,10 @@ while playing:
                 if onFloor(sonicJumpRect):
                     startJump = time()
                     jumping = True
-                    changeSpeed(sonicJumpRect, (0,1500))
+                    changeSpeed(sonicJumpRect, (0,1300))
                     jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     jumpSound.play()
                     jumpSound.set_volume(0.03)
-                else:
-                    #if sonicJumpRect['speed'][1] < 0:
-                    print("je descends")
-                    sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 1000)
                 # else:
                 #     preJump = True
                 #on a perdu -> on recommence une partie
@@ -116,7 +120,8 @@ while playing:
                 
         elif event.type == KEYUP:
             if event.key == K_SPACE:
-                sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
+                #sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
+                changeSpeed(sonicJumpRect, (0,-400))
 
     #si un prejump a été lancé, on fait un jump
     # if preJump:
@@ -133,17 +138,20 @@ while playing:
     #SPAWN DES MOBS#
     ################
     #on fait spawn les mobs, avec un délais qui empêche les situations impossibles
-    mobsSpeed = 900 + (score * 1.5)
+    mobsSpeed = 800 + (score * 1.2)
     randomSpawn2 = uniform(400, height - 200 - 144)
-    delayMobs = 150 * 4/mobsSpeed
+    delayMobs = 150 * 6/mobsSpeed
     if time() >= timeSpawn+delayMobs and not lost:
-        rand = randint(1,2)
-        if rand == 1:
-            enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200))))
-            enemies[len(enemies)-1]['hp'] = 44
+        rand = randint(1,10)
+        if rand <= 6:
+            if 0 < rand <= 2: 
+                enemies.append(entity(rockSurface.get_rect(topleft=(width, height - 200)), "littleMob"))
+            elif 2 < rand <= 4:
+                enemies.append(entity(statesDuck[duckState].get_rect(topleft=(width, height - 200)), "mediumMob"))
+            else:
+                enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200)), "bigMob"))
         else:
-            enemies.append(entity(enemySurface.get_rect(topleft=(width, randomSpawn2))))
-            enemies[len(enemies)-1]['hp'] = 666
+            enemies.append(entity(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
         timeSpawn = time()
 
     #tick de la frame
@@ -173,10 +181,10 @@ while playing:
     ##############
     for i in range(len(enemies)):
         if enemies[i-1]['speed'] == (0,0):
-            if enemies[i-1]['hp'] == 44:
+            if enemies[i-1]['type'] != "flyingMob":
                 changeSpeed(enemies[i-1],(mobsSpeed,0))
             else:
-                changeSpeed(enemies[i-1],(mobsSpeed,randint(-500,0)))
+                changeSpeed(enemies[i-1],(mobsSpeed,choice([randint(-380, -280),randint(-120,-20)])))
         changePosition(enemies[i-1], tick)
         #si un ennemie touche sonic ...
         if enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']):
@@ -189,10 +197,16 @@ while playing:
         #si un ennemie atteind le mur
         elif enemyRestriction(enemies[i-1]):
             enemies.pop(i-1)
-        if enemies[i-1]['hp'] == 44:
-            screen.blit(enemySurface, enemies[i-1]['rect'])
+        if enemies[i-1]['type'] == "littleMob":
+            screen.blit(rockSurface,enemies[i-1]['rect'])   
+        elif enemies[i-1]['type'] == "mediumMob":
+            screen.blit(statesDuck[duckState],enemies[i-1]['rect'])
+            delayGif = time() - timeGifDuck
+            timeGifDuck, duckState = animateGif(0.08,2,timeGifDuck, duckState)
+        elif enemies[i-1]['type'] == "bigMob":
+            screen.blit(enemySurface,enemies[i-1]['rect'])
         else:
-            screen.blit(enemy2Surface,enemies[i-1]['rect'])
+            screen.blit(enemyBirdSurface,enemies[i-1]['rect'])
     
     ############
     #LES TEXTES#
@@ -252,30 +266,19 @@ while playing:
 
     #si on saute on affiche sonicJump
     if jumping:
-        sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 15)
+        changeSpeed(sonicJumpRect, (0,-15))
         screen.blit(sonicJumpSurface, sonicJumpRect['rect'])
     #si on a pas perdu on affiche le gif sonic qui court
     elif not lost:
         #affichage du gif à la main
         screen.blit(statesSonic[0][sonicState],(100,height - 200 - 144))
-        delayGif = time() - timeGif
-        if delayGif > 0.1 - score / 10000:       
-            sonicState += 1
-            timeGif = time()
+        timeGif, sonicState = animateGif(0.08,2,timeGif, sonicState)
     #sinon on affiche sonic standing
     else:
         screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - 144))
         screen.blit(restartSurface,restartRect)
-        delayGif = time() - timeGif
-        if delayGif > 0.3:
-            sonicStandingState += 1
-            timeGif = time()
-        
-    #fin des états des gifs             
-    if sonicState == 4:
-        sonicState = 0
-    if sonicStandingState == 2:
-        sonicStandingState = 0
+        timeGif, sonicStandingState = animateGif(0.3,2,timeGif, sonicStandingState)
+
     pygame.display.flip()
 pygame.quit()
 

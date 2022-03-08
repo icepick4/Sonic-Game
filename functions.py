@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from time import time
 pygame.init()
 
 windowSize = pygame.display.get_desktop_sizes()[0]
@@ -10,12 +11,13 @@ height = windowSize[1]
 def onFloor(entity):
     return entity['position'][1] == height - 200 - 144
 
-def entity(rect):
+def entity(rect,type):
     entity={'rect': rect,
             'speed': (0,0),
             'position': rect.topleft,
             'hp': 3,
-            'weight': 294
+            'weight': 294,
+            'type': type
             }
     return entity
     
@@ -47,6 +49,15 @@ def enemyRestriction(entity):
     if x + w < 0:
         return True
     return False
+
+def animateGif(delay, nbImages, timeGif, state):
+    delayGif = time() - timeGif
+    if delayGif > delay:
+        state += 1
+        timeGif = time()
+    if state == nbImages:
+        state = 0
+    return timeGif, state
     
 
     
