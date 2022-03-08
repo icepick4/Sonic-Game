@@ -40,6 +40,8 @@ def sonicPosRestriction(entity,zone):
     if y + h > zone.bottom:
         y = zone.bottom - h
         entity['speed'] = (0,0)
+    if y < zone.top:
+        y = zone.top
     entity['position'] = (x,y)
     entity['rect'].topleft = entity['position']
 
