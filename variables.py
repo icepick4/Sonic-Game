@@ -22,13 +22,15 @@ timeJump = 0.4
 timeSpawn = time()
 #init temps d'effet de fond
 effectTime = time()
+#timer pour obtenir les ticks
+timer = pygame.time.Clock()
 
 ##############
 #LES BOOLEENS#
 ##############
 #état de saut
 jumping = False
-preJump = False
+falling = False
 #variable qui maintient le while du jeu
 playing = True
 #état de dégat pour effet visuel (fond rouge) ou heal (fond vert)
@@ -62,15 +64,15 @@ statesDuck[1] = pygame.image.load("images/duck2.png").convert_alpha()
 #init des enemies
 enemySpikeSurface = pygame.image.load("images/spike.png").convert_alpha()
 enemyBirdSurface = pygame.image.load("images/bird.png").convert_alpha()
-
+rockSurface = pygame.image.load("images/rock.png").convert_alpha()
+enemies = []
 #sonic en saut
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 
 #le coeur
 heartSurface = pygame.image.load("images/heart.png").convert_alpha()
 
-#rock image
-rockSurface = pygame.image.load("images/rock.png").convert_alpha()
+
 
 ######################
 #LES TYPES DE CLASSES#
@@ -84,3 +86,38 @@ sonic1Rect = Sonic(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
 heartRect = heartSurface.get_rect(topleft=(65,65))
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,200), (128,height - 400))
+
+##########
+#LES SONS#
+##########
+healingPath = "sounds/healing.wav"
+jumpPath = "sounds/jump.mp3"
+damagePath = "sounds/damage.wav"
+
+####################
+#TEXTES SUR L'ECRAN#
+####################
+#init du score, du bestscore, et du lastscore
+score = 0
+with open("bestScore.txt") as f:
+    bestScore = int(f.readline())
+scoreTimer = time()
+scoreFont = pygame.font.SysFont("Courier New", 50)
+restartFont = pygame.font.SysFont("Courier New", 75)
+scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
+scoreRect = scoreSurface.get_rect(midtop=(width/2, 125))
+lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
+lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 50))
+bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
+bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 0))
+restartSurface = restartFont.render("PRESS SPACE TO START", True, (255,10,10))
+restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
+
+#bouton pour fermer la fenetre
+endFont = pygame.font.SysFont("Courier New", 50)
+endSurface = endFont.render("CLOSE", True, (0,0,0))
+endRect = endSurface.get_rect(topleft=(windowSize[0]-180,10))
+
+
+
+
