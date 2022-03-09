@@ -11,3 +11,4 @@ class Enemy(Entity):
         if x + w < 0:
             return True
         return False
+    
