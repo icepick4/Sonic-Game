@@ -4,8 +4,12 @@ try:
 except:
     print("Vous n'avez pas téléchargé le module pygame ! \n Téléchargez le avec la commande ci-contre : pip install pygame")
 from time import time
-from functions import entity, onFloor, changeSpeed, changePosition, sonicPosRestriction, enemyRestriction, animateGif, playSound
 from random import randint,uniform, choice
+
+from Functions import animateGif, playSound
+from variables import *
+from classes.Enemy import Enemy
+
 pygame.init()
 
 #set the window
@@ -17,61 +21,7 @@ height = windowSize[1]
 #timer pour obtenir les ticks
 timer = pygame.time.Clock()
 
-#variable qui maintient le while du jeu
-playing = True
-
-#personnage
-#tableau des états de sonic : tab[0][i] -> état de saut, tab[1][i] -> état de standing
-statesSonic = [[0,0,0,0],[0,0]]
-statesSonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
-sonic1Rect = entity(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)), "sonic")
-statesSonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
-statesSonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
-statesSonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
-statesSonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
-statesSonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
-sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
-sonicJumpRect = entity(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)), "sonicJumping")
-
-#rect qui restreint le personnage
-sonicRect = pygame.Rect((100,200), (128,height - 400))
-
-#état qui définie quel image du gif on affiche
-sonicState = 0
-sonicStandingState = 0
-#init du delais d'affichage du gif
-timeGif = time()
-timeGifDuck = time()
-timeGifCharac = time()
-#init du départ du saut
-startJump = time()
-#temps de saut
-timeJump = 0.4
-#état de saut
-jumping = False
-preJump = False
-#init des coeurs
-heart3Surface = pygame.image.load("images/damage3.png").convert_alpha()
-heartRect = heart3Surface.get_rect(topleft=(65,65))
-
-#init des enemies
-enemySurface = pygame.image.load("images/spike.png").convert_alpha()
-enemyBirdSurface = pygame.image.load("images/bird.png").convert_alpha()
 enemies = []
-timeSpawn = time()
-
-statesDuck = [0,0]
-statesDuck[0] = pygame.image.load("images/duck1.png").convert_alpha()
-statesDuck[1] = pygame.image.load("images/duck2.png").convert_alpha()
-duckState = 0
-
-rockSurface = pygame.image.load("images/rock.png").convert_alpha()
-#état de dégat pour effet visuel (fond rouge) ou heal (fond vert)
-damage = False
-healing = False
-effectTime = time()
-#état qui définit si on a perdu ou non
-lost = True
 
 #init du score, du bestscore, et du lastscore
 score = 0
@@ -90,15 +40,20 @@ restartSurface = restartFont.render("PRESS SPACE TO START", True, (255,10,10))
 restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
 
 #sons paths
-healingPath = "sons/healing.wav"
-jumpPath = "sons/jump.mp3"
-damagePath = "sons/damage.wav"
+healingPath = "sounds/healing.wav"
+jumpPath = "sounds/jump.mp3"
+damagePath = "sounds/damage.wav"
+
 #bouton pour fermer la fenetre
 endFont = pygame.font.SysFont("Courier New", 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topleft=(windowSize[0]-180,10))
 
 while playing:
+
+    #####################
+    #ACTIONS DES TOUCHES#
+    #####################
     for event in pygame.event.get():
         if event.type == QUIT:
             playing = False
@@ -109,10 +64,10 @@ while playing:
         elif event.type == KEYDOWN:
             if event.key == K_SPACE:
                 #on peut sauter
-                if onFloor(sonicJumpRect):
+                if sonicJumpRect.onFloor():
                     startJump = time()
                     jumping = True
-                    changeSpeed(sonicJumpRect, (0,1300 + score / 4))
+                    sonicJumpRect.changeSpeed((0,1300 + score / 4))
                     playSound(jumpPath, 0.03)
                     # jumpSound = pygame.mixer.Sound("sons/jump.mp3")
                     # jumpSound.play()
@@ -129,8 +84,8 @@ while playing:
                 
         elif event.type == KEYUP:
             if event.key == K_SPACE:
-                #sonicJumpRect['speed'] = (0,sonicJumpRect['speed'][1] - 500)
-                changeSpeed(sonicJumpRect, (0,-500 - score / 2))
+                #sonicJumpRect.speed = (0,sonicJumpRect.speed[1] - 500)
+                sonicJumpRect.changeSpeed((0,-500 - score / 2))
 
     #si un prejump a été lancé, on fait un jump
     # if preJump:
@@ -150,35 +105,35 @@ while playing:
     mobsSpeed = 900 + (score / 2)
     randomSpawn2 = uniform(400, height - 200 - 144)
     delayMobs = 150 * 4.5/mobsSpeed
-    if time() >= timeSpawn+delayMobs and not lost:
+    if time() >= timeSpawn+delayMobs+uniform(-0.05,0.5) and not lost:
         rand = randint(1,10)
-        if sonic1Rect['hp'] == 1:
+        if sonic1Rect.hp == 1:
             randomHeart = randint(1,10)
-        elif sonic1Rect['hp'] == 2:
+        elif sonic1Rect.hp == 2:
             randomHeart = randint(1,30)
-        elif sonic1Rect['hp'] == 3:
+        elif sonic1Rect.hp == 3:
             randomHeart = randint(1,50)
 
         if rand <= 6:
             if 0 < rand <= 2: 
-                enemies.append(entity(rockSurface.get_rect(topleft=(width, height - 200)), "littleMob"))
+                enemies.append(Enemy(rockSurface.get_rect(topleft=(width, height - 200)), "littleMob"))
             elif 2 < rand <= 4:
-                enemies.append(entity(statesDuck[duckState].get_rect(topleft=(width, height - 200)), "mediumMob"))
+                enemies.append(Enemy(statesDuck[duckState].get_rect(topleft=(width, height - 200)), "mediumMob"))
             else:
-                enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200)), "bigMob"))
+                enemies.append(Enemy(enemySpikeSurface.get_rect(topleft=(width, height - 200)), "bigMob"))
         else:
-            enemies.append(entity(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
-        if randomHeart == 1 and enemies[len(enemies)-1]['type'] != "heart" and enemies[len(enemies)-2]['type'] != "heart":
-            enemies.append(entity(heart3Surface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
+            enemies.append(Enemy(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
+        if randomHeart == 1 and enemies[len(enemies)-1].type != "heart" and enemies[len(enemies)-2].type != "heart":
+            enemies.append(Enemy(heart3Surface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
         timeSpawn = time()
 
     #tick de la frame 
     tick = timer.tick(120) / 1000   
     
-    #####################
-    #LES DEGATS ET HEALS#
-    #####################
-    #on affiche l'effet visuel de dégats(fond rouge) pendant 0.25s
+    ###################################
+    #LES FONDS --> LES DEGATS ET HEALS#
+    ###################################
+    #on affiche l'effet visuel de dégats(fond rouge) pendant 0.25s, et de healing (fond vert) (default : blanc)
     effectDelay = time() - effectTime
     if damage and effectDelay < 0.25:  
         screen.fill((255,100,100))
@@ -190,14 +145,17 @@ while playing:
         damage = False
         healing = False
 
+    ########
+    #LES PV#
+    ########
     #affichage du coeur en fonction des pv de sonic
-    if sonic1Rect['hp'] == 4:
+    if sonic1Rect.hp == 4:
         for i in range(4):
             screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
-    elif sonic1Rect['hp'] == 3:
+    elif sonic1Rect.hp == 3:
         for i in range(3):
             screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
-    elif sonic1Rect['hp'] == 2:
+    elif sonic1Rect.hp == 2:
         for i in range(2):
             screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
     else:
@@ -207,43 +165,46 @@ while playing:
     #LES ENNEMIES#
     ##############
     for i in range(len(enemies)):
-        if enemies[i-1]['speed'] == (0,0):
-            if enemies[i-1]['type'] == "flyingMob":
-                changeSpeed(enemies[i-1],(mobsSpeed,choice([randint(-400, -300),randint(-120,100)])))
-                
-            elif enemies[i-1]['type'] == "heart":
-                changeSpeed(enemies[i-1],(mobsSpeed + randint(0,500),0))
+        if enemies[i-1].speed == (0,0):
+            if enemies[i-1].type == "flyingMob":
+                enemies[i-1].changeSpeed((mobsSpeed,choice([randint(-400, -300),randint(-120,100)])))   
+            elif enemies[i-1].type == "heart":
+                enemies[i-1].changeSpeed((mobsSpeed + randint(0,500),0))
             else:
-                changeSpeed(enemies[i-1],(mobsSpeed,0))
-        changePosition(enemies[i-1], tick)
+                enemies[i-1].changeSpeed((mobsSpeed,0))
+        enemies[i-1].changePosition(tick)
         #si un ennemie touche sonic ...
-        if enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']) and enemies[i-1]['type'] == "heart":
+        if enemies[i-1].rect.colliderect(sonicJumpRect.rect) and enemies[i-1].type == "heart":
             playSound(healingPath, 0.1)
-            sonic1Rect['hp'] +=1
+            sonic1Rect.hp +=1
             healing = True
             enemies.pop(i-1)
+            break
         #si un ennemie atteind le mur
-        elif enemies[i-1]['rect'].colliderect(sonicJumpRect['rect']):
+        elif enemies[i-1].rect.colliderect(sonicJumpRect.rect):
             playSound(damagePath, 0.1)
             damage = True
-            sonic1Rect['hp'] -=1
+            sonic1Rect.hp -=1
             enemies.pop(i-1)
-        elif enemyRestriction(enemies[i-1]):
+        elif enemies[i-1].enemyRestriction():
             enemies.pop(i-1)
-        
+
+        ####################
+        #AFFICHAGE DES MOBS#
+        ####################       
         #on blit les bonnes image en fonction du type de mob
-        if enemies[i-1]['type'] == "littleMob":
-            screen.blit(rockSurface,enemies[i-1]['rect'])   
-        elif enemies[i-1]['type'] == "mediumMob":
-            screen.blit(statesDuck[duckState],enemies[i-1]['rect'])
+        if enemies[i-1].type == "littleMob":
+            screen.blit(rockSurface,enemies[i-1].rect)   
+        elif enemies[i-1].type == "mediumMob":
+            screen.blit(statesDuck[duckState],enemies[i-1].rect)
             delayGif = time() - timeGifDuck
             timeGifDuck, duckState = animateGif(0.08,2,timeGifDuck, duckState)
-        elif enemies[i-1]['type'] == "bigMob":
-            screen.blit(enemySurface,enemies[i-1]['rect'])
-        elif enemies[i-1]['type'] == "flyingMob":
-            screen.blit(enemyBirdSurface,enemies[i-1]['rect'])
+        elif enemies[i-1].type == "bigMob":
+            screen.blit(enemySpikeSurface,enemies[i-1].rect)
+        elif enemies[i-1].type == "flyingMob":
+            screen.blit(enemyBirdSurface,enemies[i-1].rect)
         else:
-            screen.blit(heart3Surface,enemies[i-1]['rect'])
+            screen.blit(heart3Surface,enemies[i-1].rect)
     
     ############
     #LES TEXTES#
@@ -270,13 +231,13 @@ while playing:
     ############
     #ON A PERDU#
     ############
-    if sonic1Rect['hp'] == 0:
+    if sonic1Rect.hp == 0:
         for i in range(len(enemies)):
             enemies.pop(0)
         lost = True
         lastScore = score
         lastScoreSurface = scoreFont.render("Last score : {0}".format(lastScore), True, (0,0,0))
-        sonic1Rect['hp'] = 3
+        sonic1Rect.hp = 3
         
     #herbe
     pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
@@ -286,25 +247,24 @@ while playing:
     #################
     #si on est en cours de saut -> on change la position, sinon on redescend
     if time() - startJump < timeJump:
-        changePosition(sonicJumpRect,tick)
+        sonicJumpRect.changePosition(tick)
     else:
-        changeSpeed(sonicJumpRect, (0,-1300 - score / 2))
+        sonicJumpRect.changeSpeed((0,-1300 - score / 2))
         startJump = time()
     
     ####################
     #AFFICHAGE DU PERSO#
     ####################
-
     #on restreint les positions de sonic
-    sonicPosRestriction(sonicJumpRect, sonicRect)
+    sonicJumpRect.sonicPosRestriction(sonicRect)
     #si la speed est passé à 0 -> le saut n'est plus actif
-    if sonicJumpRect['speed'][1] == 0:
+    if sonicJumpRect.speed[1] == 0:
         jumping = False
 
     #si on saute on affiche sonicJump
     if jumping:
-        changeSpeed(sonicJumpRect, (0,-13))
-        screen.blit(sonicJumpSurface, sonicJumpRect['rect'])
+        sonicJumpRect.changeSpeed((0,-13))
+        screen.blit(sonicJumpSurface, sonicJumpRect.rect)
     #si on a pas perdu on affiche le gif sonic qui court
     elif not lost:
         #affichage du gif à la main
