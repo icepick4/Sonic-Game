@@ -81,6 +81,6 @@ sonic1Rect = Sonic(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
 ################
 #LES TYPES RECT#
 ################
-heartRect = heart3Surface.get_rect(topleft=(65,65))
+heartRect = heartSurface.get_rect(topleft=(65,65))
 #rect qui restreint le personnage
 sonicRect = pygame.Rect((100,200), (128,height - 400))
