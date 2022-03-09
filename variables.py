@@ -67,7 +67,7 @@ enemyBirdSurface = pygame.image.load("images/bird.png").convert_alpha()
 sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 
 #le coeur
-heart3Surface = pygame.image.load("images/damage3.png").convert_alpha()
+heartSurface = pygame.image.load("images/heart.png").convert_alpha()
 
 #rock image
 rockSurface = pygame.image.load("images/rock.png").convert_alpha()

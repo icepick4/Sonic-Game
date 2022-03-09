@@ -124,7 +124,7 @@ while playing:
         else:
             enemies.append(Enemy(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
         if randomHeart == 1 and enemies[len(enemies)-1].type != "heart" and enemies[len(enemies)-2].type != "heart":
-            enemies.append(Enemy(heart3Surface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
+            enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
         timeSpawn = time()
 
     #tick de la frame 
@@ -151,15 +151,15 @@ while playing:
     #affichage du coeur en fonction des pv de sonic
     if sonic1Rect.hp == 4:
         for i in range(4):
-            screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
+            screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
     elif sonic1Rect.hp == 3:
         for i in range(3):
-            screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
+            screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
     elif sonic1Rect.hp == 2:
         for i in range(2):
-            screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
+            screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
     else:
-        screen.blit(heart3Surface,(heartRect[0],heartRect[1]))
+        screen.blit(heartSurface,(heartRect[0],heartRect[1]))
 
     ##############
     #LES ENNEMIES#
@@ -204,7 +204,7 @@ while playing:
         elif enemies[i-1].type == "flyingMob":
             screen.blit(enemyBirdSurface,enemies[i-1].rect)
         else:
-            screen.blit(heart3Surface,enemies[i-1].rect)
+            screen.blit(heartSurface,enemies[i-1].rect)
     
     ############
     #LES TEXTES#
