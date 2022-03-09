@@ -3,7 +3,7 @@ try:
     from pygame.locals import *
 except:
     print("Vous n'avez pas téléchargé le module pygame ! \n Téléchargez le avec la commande ci-contre : pip install pygame")
-from time import time
+from time import time,sleep
 from random import randint,uniform, choice
 
 from functions import animateGif, playSound
@@ -24,7 +24,7 @@ while playing:
             playing = False
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
             #on presse le bouton close
-            if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60:
+            if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60 and lost and not end.get_busy():
                 playing = False
         elif event.type == KEYDOWN:
             if event.key == K_SPACE:
@@ -61,7 +61,7 @@ while playing:
             randomHeart = randint(1,25)
         elif sonic1Rect.hp == 3:
             randomHeart = randint(1,50)
-        elif sonic1Rect.hp == 3:
+        elif sonic1Rect.hp == 4:
             randomHeart = randint(1,150)
         if rand <= 6:
             if 0 < rand <= 2: 
@@ -155,10 +155,13 @@ while playing:
     ############
     #LES TEXTES#
     ############
-    screen.blit(endSurface,endRect)
-    screen.blit(scoreSurface,scoreRect)
-    screen.blit(lastScoreSurface,lastScoreRect)
-    screen.blit(bestScoreSurface,bestScoreRect)
+    if lost:
+        screen.blit(endSurface,endRect)
+        screen.blit(lastScoreSurface,lastScoreRect)
+        screen.blit(bestScoreSurface,bestScoreRect)
+    elif not lost:
+        scoreRect = scoreSurface.get_rect(topright=(width,-26))
+        screen.blit(scoreSurface,scoreRect)
 
     ############
     #LES SCORES#
@@ -166,13 +169,10 @@ while playing:
     #si on a pas perdu on affiche le score actuel, sinon le last score
     if not lost:
         score = int(round((time() - scoreTimer) * 10,0))
-        scoreSurface = scoreFont.render("Score : {0}".format(score), True, (0,0,0))
-    else:
-        scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
+        scoreSurface = scoreLiveFont.render("{0}".format(score), True, (0,0,0))
     if bestScore < score :
         bestScore = score
-        bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (255,25,25))
-
+        
 
     ############
     #ON A PERDU#
@@ -183,7 +183,9 @@ while playing:
         lost = True
         lastScore = score
         lastScoreSurface = scoreFont.render("Last score : {0}".format(lastScore), True, (0,0,0))
+        bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
         sonic1Rect.hp = 3
+        end = playSound(lostPath,0.06)
         
     #herbe
     pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
@@ -211,7 +213,7 @@ while playing:
         sonicJumpRect.changeSpeed((0,-50))
 
     #si on saute on affiche sonicJump
-    if jumping:
+    if jumping and not lost:
         sonicJumpRect.changeSpeed((0,-3))
         screen.blit(sonicJumpSurface, sonicJumpRect.rect)
     #si on a pas perdu on affiche le gif sonic qui court
@@ -221,9 +223,12 @@ while playing:
         timeGif, sonicState = animateGif(0.1,4,timeGif, sonicState)
     #sinon on affiche sonic standing
     else:
-        screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - 144))
-        screen.blit(restartSurface,restartRect)
-        timeGif, sonicStandingState = animateGif(0.3,2,timeGif, sonicStandingState)
+        if not end.get_busy():
+            screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - 144))
+            screen.blit(restartSurface,restartRect)
+            timeGif, sonicStandingState = animateGif(0.3,2,timeGif, sonicStandingState)
+        else:
+            screen.blit(gameOverSurface,gameOverRect)
     pygame.display.flip()
 pygame.quit()
 

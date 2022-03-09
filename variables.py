@@ -2,6 +2,7 @@ from time import time
 import pygame
 from classes.Sonic import Sonic
 pygame.init()
+pygame.mixer.set_num_channels(8)
 
 windowSize = pygame.display.get_desktop_sizes()[0]
 screen = pygame.display.set_mode(windowSize)
@@ -93,7 +94,8 @@ sonicRect = pygame.Rect((100,200), (128,height - 400))
 healingPath = "sounds/healing.wav"
 jumpPath = "sounds/jump.mp3"
 damagePath = "sounds/damage.wav"
-
+lostPath = "sounds/lost.wav"
+end = pygame.mixer.Channel(5)
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
@@ -103,20 +105,23 @@ with open("bestScore.txt") as f:
     bestScore = int(f.readline())
 scoreTimer = time()
 scoreFont = pygame.font.SysFont("Courier New", 50)
-restartFont = pygame.font.SysFont("Courier New", 75)
-scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
-scoreRect = scoreSurface.get_rect(midtop=(width/2, 125))
+bigFont = pygame.font.SysFont("Courier New", 75)
+scoreLiveFont = pygame.font.SysFont("Courier New", 200)
+scoreSurface = scoreLiveFont.render("{0}".format(0), True, (0,0,0))
 lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
-lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 50))
+lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 100))
 bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
-bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 0))
-restartSurface = restartFont.render("PRESS SPACE TO START", True, (255,10,10))
+bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 25))
+restartSurface = bigFont.render("PRESS SPACE TO START", True, (255,10,10))
 restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
 
 #bouton pour fermer la fenetre
 endFont = pygame.font.SysFont("Courier New", 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topleft=(windowSize[0]-180,10))
+
+gameOverSurface = pygame.transform.smoothscale(pygame.image.load("images/gameOver.png").convert_alpha(),(width,height))
+gameOverRect = (0,0)
 
 
 
