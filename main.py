@@ -168,7 +168,7 @@ while playing:
                 enemies.append(entity(enemySurface.get_rect(topleft=(width, height - 200)), "bigMob"))
         else:
             enemies.append(entity(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
-        if randomHeart == 1 and enemies[len(enemies)-1]['type'] != "heart":
+        if randomHeart == 1 and enemies[len(enemies)-1]['type'] != "heart" and enemies[len(enemies)-2]['type'] != "heart":
             enemies.append(entity(heart3Surface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
         timeSpawn = time()
 
@@ -201,7 +201,7 @@ while playing:
         for i in range(2):
             screen.blit(heart3Surface,(heartRect[0] + i*100,heartRect[1]))
     else:
-        screen.blit(heart3Surface,(heartRect[0] + 100,heartRect[1]))
+        screen.blit(heart3Surface,(heartRect[0],heartRect[1]))
 
     ##############
     #LES ENNEMIES#
@@ -264,8 +264,6 @@ while playing:
         scoreSurface = scoreFont.render("Score : {0}".format(0), True, (0,0,0))
     if bestScore < score :
         bestScore = score
-        with open('bestScore.txt', 'w') as f:
-            f.write(str(bestScore))
         bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (255,25,25))
 
 
@@ -320,6 +318,9 @@ while playing:
 
     pygame.display.flip()
 pygame.quit()
+
+with open('bestScore.txt', 'w') as f:
+    f.write(str(bestScore))
 
 
 
