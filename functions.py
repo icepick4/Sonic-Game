@@ -12,12 +12,11 @@ def animateGif(delay, nbImages, timeGif, state):
         state = 0
     return timeGif, state
 
+
 def playSound(path, volume):
-    voice = pygame.mixer.Channel(5)
     Sound = pygame.mixer.Sound(path)
-    voice.play(Sound)
+    Sound.play()
     Sound.set_volume(volume)
-    return voice
 
 
     

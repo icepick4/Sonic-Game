@@ -3,7 +3,7 @@ import pygame
 from classes.Sonic import Sonic
 from classes.Entity import Entity
 pygame.init()
-pygame.mixer.set_num_channels(8)
+from random import randint,uniform
 
 windowSize = pygame.display.get_desktop_sizes()[0]
 screen = pygame.display.set_mode(windowSize)
@@ -27,7 +27,8 @@ effectTime = time()
 timeScoreSound = time()
 #timer pour obtenir les ticks
 timer = pygame.time.Clock()
-
+endTime = time() - 3
+bestScoreTime = time()
 ##############
 #LES BOOLEENS#
 ##############
@@ -78,16 +79,26 @@ heartSurface = pygame.image.load("images/heart.png").convert_alpha()
 
 grassSurface = pygame.image.load("images/grass.png").convert_alpha()
 grassRect = Entity(grassSurface.get_rect(topleft=(0,height)))
+grassRect3 = Entity(grassSurface.get_rect(topleft=(width,height)))
 grassRect2 = Entity(grassSurface.get_rect(topleft=(width,height)))
 # grassSurface = pygame.transform.smoothscale(pygame.image.load("images/sol png.png").convert_alpha(),(1920,200))
+cloudSurface = pygame.image.load("images/cloud.png").convert_alpha()
+cloudRect = Entity(cloudSurface.get_rect(topleft=(width,randint(200,height / 2))))
+cloud2Rect = Entity(cloudSurface.get_rect(topleft=(width + randint(300,1500),randint(200,height / 2))))
+cloudRect.speed = (620,0)
+cloud2Rect.speed = (550,0)
 
-
+palmSurface = pygame.image.load("images/palm-min.png").convert_alpha()
+palm2Surface = pygame.image.load("images/palm2-min.png").convert_alpha()
+palmRect = Entity(palmSurface.get_rect(topleft=(width,height - 200)))
+palm2Rect = Entity(palm2Surface.get_rect(topleft=(width + randint(500,2000),height - 200)))
+palm2Rect.speed = (475,0)
+palmRect.speed = (475,0)
 ######################
 #LES TYPES DE CLASSES#
 ######################
 sonicJumpRect = Sonic(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)))
 sonic1Rect = Sonic(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
-
 ################
 #LES TYPES RECT#
 ################
@@ -104,9 +115,8 @@ damagePath = "sounds/damage.wav"
 lostPath = "sounds/lost.wav"
 scorePath = "sounds/score.wav"
 score1000Path = "sounds/1000score.wav"
-bestScorePath = "sounds/1000score.wav"
-end = pygame.mixer.Channel(6)
-score1000 = pygame.mixer.Channel(6)
+bestScorePath = "sounds/bestScore.wav"
+
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
@@ -132,7 +142,7 @@ endFont = pygame.font.Font(fontPath, 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topright=(width - 10,10))
 
-gameOverSurface = pygame.transform.smoothscale(pygame.image.load("images/gameOver.png").convert_alpha(),(width,height))
+gameOverSurface = pygame.image.load("images/gameOver.png").convert_alpha()
 gameOverRect = (0,0)
 
 
