@@ -1,6 +1,7 @@
 from time import time
 import pygame
 from classes.Sonic import Sonic
+from classes.Entity import Entity
 pygame.init()
 pygame.mixer.set_num_channels(8)
 
@@ -23,6 +24,7 @@ timeJump = 0.4
 timeSpawn = time()
 #init temps d'effet de fond
 effectTime = time()
+timeScoreSound = time()
 #timer pour obtenir les ticks
 timer = pygame.time.Clock()
 
@@ -37,6 +39,7 @@ playing = True
 #état de dégat pour effet visuel (fond rouge) ou heal (fond vert)
 damage = False
 healing = False
+bestScoreBeaten = False
 #état qui définit si on a perdu ou non
 lost = True
 #état qui définie quel image du gif on affiche
@@ -73,6 +76,10 @@ sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 #le coeur
 heartSurface = pygame.image.load("images/heart.png").convert_alpha()
 
+grassSurface = pygame.image.load("images/grass.png").convert_alpha()
+grassRect = Entity(grassSurface.get_rect(topleft=(0,height)))
+grassRect2 = Entity(grassSurface.get_rect(topleft=(width,height)))
+# grassSurface = pygame.transform.smoothscale(pygame.image.load("images/sol png.png").convert_alpha(),(1920,200))
 
 
 ######################
@@ -95,7 +102,11 @@ healingPath = "sounds/healing.wav"
 jumpPath = "sounds/jump.mp3"
 damagePath = "sounds/damage.wav"
 lostPath = "sounds/lost.wav"
-end = pygame.mixer.Channel(5)
+scorePath = "sounds/score.wav"
+score1000Path = "sounds/1000score.wav"
+bestScorePath = "sounds/1000score.wav"
+end = pygame.mixer.Channel(6)
+score1000 = pygame.mixer.Channel(6)
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
@@ -104,9 +115,10 @@ score = 0
 with open("bestScore.txt") as f:
     bestScore = int(f.readline())
 scoreTimer = time()
-scoreFont = pygame.font.SysFont("Courier New", 50)
-bigFont = pygame.font.SysFont("Courier New", 75)
-scoreLiveFont = pygame.font.SysFont("Courier New", 200)
+fontPath = "font/BACKTO1982.TTF"
+scoreFont = pygame.font.Font(fontPath, 40)
+bigFont = pygame.font.Font(fontPath, 50)
+scoreLiveFont = pygame.font.Font(fontPath, 150) 
 scoreSurface = scoreLiveFont.render("{0}".format(0), True, (0,0,0))
 lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
 lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 100))
@@ -116,9 +128,9 @@ restartSurface = bigFont.render("PRESS SPACE TO START", True, (255,10,10))
 restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
 
 #bouton pour fermer la fenetre
-endFont = pygame.font.SysFont("Courier New", 50)
+endFont = pygame.font.Font(fontPath, 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
-endRect = endSurface.get_rect(topleft=(windowSize[0]-180,10))
+endRect = endSurface.get_rect(topright=(width - 10,10))
 
 gameOverSurface = pygame.transform.smoothscale(pygame.image.load("images/gameOver.png").convert_alpha(),(width,height))
 gameOverRect = (0,0)

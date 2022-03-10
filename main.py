@@ -14,8 +14,8 @@ pygame.init()
 
 while playing:
     acceleration = score / 2
-    if acceleration > 300:
-        acceleration = 300
+    if acceleration > 350:
+        acceleration = 350
     #####################
     #ACTIONS DES TOUCHES#
     #####################
@@ -33,7 +33,8 @@ while playing:
                     startJump = time()
                     jumping = True
                     sonicJumpRect.changeSpeed((0,1300 - acceleration / 2.5))
-                    playSound(jumpPath, 0.02)
+                    if not score1000.get_busy():
+                        playSound(jumpPath, 0.02)
                 if lost:
                     lost = False
                     scoreTimer = time()
@@ -47,11 +48,9 @@ while playing:
     ################
     #on fait spawn les mobs, avec un délais qui empêche les situations impossibles
     mobsSpeed = 900 + acceleration
-    if mobsSpeed > 1500:
-        mobsSpeed = 1500
     randomSpawn2 = uniform(400, height - 200 - 144)
     delayMobs = 150 * 4.5/mobsSpeed
-    if time() >= timeSpawn+delayMobs+uniform(-0.05,0.5) and not lost:
+    if time() >= timeSpawn+delayMobs+uniform(-0.05,0.7) and not lost:
         rand = randint(1,10)
         easterEgg = -1
         if sonic1Rect.hp == 1:
@@ -62,7 +61,7 @@ while playing:
         elif sonic1Rect.hp == 3:
             randomHeart = randint(1,50)
         elif sonic1Rect.hp == 4:
-            randomHeart = randint(1,150)
+            randomHeart = randint(1,200)
         if rand <= 6:
             if 0 < rand <= 2: 
                 enemies.append(Enemy(rockSurface.get_rect(topleft=(width, height - 200)), "littleMob"))
@@ -72,7 +71,7 @@ while playing:
                 enemies.append(Enemy(enemySpikeSurface.get_rect(topleft=(width, height - 200)), "bigMob"))
         else:
             enemies.append(Enemy(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
-        if randomHeart == 1 and enemies[len(enemies)-1].type != "heart":
+        if randomHeart == 1 and enemies[len(enemies)-1].type != "heart" and enemies[len(enemies)-2].type != "heart":
             enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
         if easterEgg == 1:
             for i in range(4):
@@ -111,9 +110,11 @@ while playing:
     for i in range(len(enemies)):
         if enemies[i].speed == (0,0):
             if enemies[i].type == "flyingMob":
-                enemies[i].changeSpeed((mobsSpeed,choice([randint(-400, -300),randint(-120,100)])))   
+                enemies[i].changeSpeed((mobsSpeed + 70,choice([randint(-400, -300),randint(-120,100)])))   
             elif enemies[i].type == "heart":
                 enemies[i].changeSpeed((mobsSpeed + randint(0,500),0))
+            elif enemies[i].type == "mediumMob":
+                enemies[i].changeSpeed((mobsSpeed + 100,0))
             else:
                 enemies[i].changeSpeed((mobsSpeed,0))
         enemies[i].changePosition(tick)
@@ -151,7 +152,23 @@ while playing:
             screen.blit(heartSurface,enemies[i].rect)
     for i in enemiesToPop:
         enemies.pop(i)
-    
+
+    ############
+    #LES SCORES#
+    ############
+    #si on a pas perdu on affiche le score actuel, sinon le last score
+    if not lost:
+        score = int(round((time() - scoreTimer) * 10,0))
+        if bestScoreBeaten:
+            scoreSurface = scoreLiveFont.render("{0}".format(score), True, (255,195,36))
+        else:
+            scoreSurface = scoreLiveFont.render("{0}".format(score), True, (0,0,0))
+    if bestScore < score :
+        bestScore = score
+        if not bestScoreBeaten:
+            playSound(bestScorePath, 0.05)
+        bestScoreBeaten = True
+        
     ############
     #LES TEXTES#
     ############
@@ -160,19 +177,15 @@ while playing:
         screen.blit(lastScoreSurface,lastScoreRect)
         screen.blit(bestScoreSurface,bestScoreRect)
     elif not lost:
-        scoreRect = scoreSurface.get_rect(topright=(width,-26))
+        scoreRect = scoreSurface.get_rect(topright=(width,10))
         screen.blit(scoreSurface,scoreRect)
-
-    ############
-    #LES SCORES#
-    ############
-    #si on a pas perdu on affiche le score actuel, sinon le last score
-    if not lost:
-        score = int(round((time() - scoreTimer) * 10,0))
-        scoreSurface = scoreLiveFont.render("{0}".format(score), True, (0,0,0))
-    if bestScore < score :
-        bestScore = score
         
+    if score%100 == 0 and score !=0 and score%1000 != 0 and time() - timeScoreSound > 0.2:
+        score1000 = playSound(scorePath,0.03)
+        timeScoreSound = time()
+    elif score%1000 == 0 and score != 0 and time() - timeScoreSound > 0.2:
+        score1000 = playSound(score1000Path, 0.05)
+        timeScoreSound = time()
 
     ############
     #ON A PERDU#
@@ -188,8 +201,21 @@ while playing:
         end = playSound(lostPath,0.06)
         
     #herbe
-    pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
+    #pygame.draw.rect(screen, (0,128,0), (0, height - 200, width, height - 200))
+    if not lost:
+        screen.blit(grassSurface,grassRect)
+        screen.blit(grassSurface,grassRect2)
+        grassRect.speed = (mobsSpeed,0)
+        grassRect2.speed = (mobsSpeed,0)
+        if grassRect.loop():
+            grassRect.position = (width-0.8,height)
+        if grassRect2.loop():
+            grassRect2.position = (width-0.8,height)
 
+        grassRect.changePosition(tick)
+        grassRect2.changePosition(tick) 
+    else:
+        screen.blit(grassSurface,grassSurface.get_rect(topright=(width,height - 200)))
     #################
     #GESTION DU SAUT#
     #################

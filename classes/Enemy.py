@@ -8,7 +8,11 @@ class Enemy(Entity):
     def enemyRestriction(self):
         x,y = self.position
         w = self.rect.size[0]
-        if x + w < 0:
-            return True
+        if self.type == "grass":
+            if x + w < 0:
+                return True
+        else:
+            if x + w < 0:
+                return True
         return False
     
