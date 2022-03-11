@@ -83,15 +83,15 @@ grassRect3 = Entity(grassSurface.get_rect(topleft=(width,height)))
 grassRect2 = Entity(grassSurface.get_rect(topleft=(width,height)))
 # grassSurface = pygame.transform.smoothscale(pygame.image.load("images/sol png.png").convert_alpha(),(1920,200))
 cloudSurface = pygame.image.load("images/cloud.png").convert_alpha()
-cloudRect = Entity(cloudSurface.get_rect(topleft=(width,randint(200,height / 2))))
-cloud2Rect = Entity(cloudSurface.get_rect(topleft=(width + randint(300,1500),randint(200,height / 2))))
+cloudRect = Entity(cloudSurface.get_rect(topleft=(width+randint(0,500),randint(200,height / 2))))
+cloud2Rect = Entity(cloudSurface.get_rect(topleft=(width + randint(1000,2500),randint(200,height / 2))))
 cloudRect.speed = (620,0)
 cloud2Rect.speed = (550,0)
 
 palmSurface = pygame.image.load("images/palm-min.png").convert_alpha()
 palm2Surface = pygame.image.load("images/palm2-min.png").convert_alpha()
-palmRect = Entity(palmSurface.get_rect(topleft=(width,height - 200)))
-palm2Rect = Entity(palm2Surface.get_rect(topleft=(width + randint(500,2000),height - 200)))
+palmRect = Entity(palmSurface.get_rect(topleft=(width+randint(0,500),height - 200)))
+palm2Rect = Entity(palm2Surface.get_rect(topleft=(width + randint(1000,2500),height - 200)))
 palm2Rect.speed = (475,0)
 palmRect.speed = (475,0)
 ######################
@@ -114,7 +114,7 @@ jumpPath = "sounds/jump.mp3"
 damagePath = "sounds/damage.wav"
 lostPath = "sounds/lost.wav"
 scorePath = "sounds/score.wav"
-score1000Path = "sounds/1000score.wav"
+score1000Path = "sounds/bestscore.wav"
 bestScorePath = "sounds/bestScore.wav"
 
 ####################

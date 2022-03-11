@@ -14,8 +14,8 @@ pygame.init()
 
 while playing:
     acceleration = score / 2
-    if acceleration > 375:
-        acceleration = 375
+    if acceleration > 600:
+        acceleration = 600
     #####################
     #ACTIONS DES TOUCHES#
     #####################
@@ -41,7 +41,11 @@ while playing:
                     score = 0    
         elif event.type == KEYUP:
             if event.key == K_SPACE:
-                sonicJumpRect.changeSpeed((0,-500 - acceleration / 1.3))
+                if acceleration > 500:
+                    fallingSpeed = 500
+                else:
+                    fallingSpeed = acceleration
+                sonicJumpRect.changeSpeed((0,-500 - fallingSpeed / 1.3))
     ################
     #SPAWN DES MOBS#
     ################
@@ -95,13 +99,6 @@ while playing:
         damage = False
         healing = False
 
-    ########
-    #LES PV#
-    ########
-    #affichage du coeur en fonction des pv de sonic
-    for i in range(sonic1Rect.hp):
-        screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
-
     ############
     #LES SCORES#
     ############
@@ -119,23 +116,6 @@ while playing:
             bestScoreTime = time()
         bestScoreBeaten = True
         
-    ############
-    #LES TEXTES#
-    ############
-    if lost:
-        screen.blit(endSurface,endRect)
-        screen.blit(lastScoreSurface,lastScoreRect)
-        screen.blit(bestScoreSurface,bestScoreRect)
-    elif not lost:
-        scoreRect = scoreSurface.get_rect(topright=(width,10))
-        screen.blit(scoreSurface,scoreRect)
-        
-    if score%100 == 0 and score !=0 and score%1000 != 0 and time() - timeScoreSound > 0.2:
-        playSound(scorePath,0.03)
-        timeScoreSound = time()
-    elif score%1000 == 0 and score != 0 and time() - timeScoreSound > 0.2:
-        playSound(score1000Path, 0.05)
-        timeScoreSound = time()
 
     ############
     #ON A PERDU#
@@ -174,9 +154,9 @@ while playing:
 
     
     if cloudRect.loop():
-        cloudRect.position = (width,randint(200,height / 2))
+        cloudRect.position = (width+randint(0,500),randint(200,height / 2))
     if cloud2Rect.loop():
-        cloud2Rect.position = (width + randint(500,2000),randint(200,height / 2))
+        cloud2Rect.position = (width + randint(1000,2500),randint(200,height / 2))
     
     cloudRect.changePosition(tick)
     cloud2Rect.changePosition(tick)
@@ -186,12 +166,12 @@ while playing:
     if palmRect.loop():
         palmRect.position = (width + randint(0,500),height - 200)
     if palm2Rect.loop():
-        palm2Rect.position = (width + randint(500,2000),height - 200)
+        palm2Rect.position = (width + randint(1000,2500),height - 200)
     palmRect.changePosition(tick)
     palm2Rect.changePosition(tick)
     screen.blit(palmSurface,palmRect) 
     screen.blit(palm2Surface,palm2Rect)
-         
+
     ##############
     #LES ENNEMIES#
     ##############
@@ -199,7 +179,7 @@ while playing:
     for i in range(len(enemies)):
         if enemies[i].speed == (0,0):
             if enemies[i].type == "flyingMob":
-                enemies[i].changeSpeed((mobsSpeed + mobsSpeed*0.05,choice([randint(-400, -300),randint(-120,100)])))   
+                enemies[i].changeSpeed((mobsSpeed + mobsSpeed*0.05,choice([randint(int(-400+mobsSpeed * 0.3),int(-300+mobsSpeed * 0.3)),randint(int(-120+mobsSpeed * 0.1),int(100+mobsSpeed * 0.1))])))   
             elif enemies[i].type == "heart":
                 enemies[i].changeSpeed((mobsSpeed + randint(0,500),0))
             elif enemies[i].type == "mediumMob":
@@ -253,6 +233,31 @@ while playing:
         sonicJumpRect.changeSpeed((0,-1300 - acceleration))
         startJump = time()
     
+    ############
+    #LES TEXTES#
+    ############
+    if lost:
+        screen.blit(endSurface,endRect)
+        screen.blit(lastScoreSurface,lastScoreRect)
+        screen.blit(bestScoreSurface,bestScoreRect)
+    elif not lost:
+        scoreRect = scoreSurface.get_rect(topright=(width,10))
+        screen.blit(scoreSurface,scoreRect)
+        
+    if score%100 == 0 and score !=0 and score%1000 != 0 and time() - timeScoreSound > 0.2:
+        playSound(scorePath,0.03)
+        timeScoreSound = time()
+    elif score%1000 == 0 and score != 0 and time() - timeScoreSound > 0.2:
+        playSound(score1000Path, 0.05)
+        timeScoreSound = time()
+
+    ########
+    #LES PV#
+    ########
+    #affichage du coeur en fonction des pv de sonic
+    for i in range(sonic1Rect.hp):
+        screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
+        
     ####################
     #AFFICHAGE DU PERSO#
     ####################
