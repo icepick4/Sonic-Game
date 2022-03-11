@@ -26,9 +26,9 @@ if name not in players:
 else:
     for i in range(len(players)):
         if players[i] == name:
-            bestScore = score[i]
+            bestScore = int(scores[i])
 print("\nNow you can play",name,"!") 
-print("Your best score is",bestScore,".\n")
+print("Your best score is",bestScore,"\n")
 print("The game launches ...")
 sleep(3)  
  

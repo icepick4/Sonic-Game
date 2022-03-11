@@ -63,7 +63,7 @@ while playing:
             randomHeart = randint(1,100)
         elif sonic1Rect.hp == 4:
             randomHeart = randint(1,200)
-        if rand <= 6:
+        if rand <= 7:
             if 0 < rand <= 2: 
                 enemies.append(Enemy(rockSurface.get_rect(topleft=(width, height - 200)), rockSurface, "littleMob"))
             elif 2 < rand <= 4:
