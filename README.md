@@ -1,14 +1,14 @@
 # Sonic Game
 
-## Commandes
+## Keys
 
-- Sauter : Barre espace
+- Jump : Space bar
 
-## But du jeu
+## Goal
 
-- Faire le meilleur score possible en esquivant les ennemies !
+- Make the best score while dodging enemies !
 
 ## Important
 
-- Le meilleur score est (1 bestScore pour chaque joueur enregistré) sauvé dans le fichier "bestScore.txt" 
-- Le jeu dépend du module Pygame
+- The best score (one best score per player registered) is saved in "bestScore.txt" 
+- The game depends of the Pygame module
