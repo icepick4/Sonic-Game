@@ -21,8 +21,7 @@ class Enemy(Entity):
     
     def display(self, screen):
         screen.blit(self.surface, self.rect)
-
-            
+          
     def moving(self):
         return self.speed != (0,0)
     

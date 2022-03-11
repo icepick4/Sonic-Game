@@ -1,11 +1,11 @@
 from time import time
-import pygame
+import pygame       
+pygame.init()
 from classes.Sonic import Sonic
 from classes.Entity import Entity
 from classes.Environment import Environment
-pygame.init()
-from random import randint,uniform
-
+from register import *
+from random import randint
 windowSize = pygame.display.get_desktop_sizes()[0]
 screen = pygame.display.set_mode(windowSize)
 width = windowSize[0]
@@ -120,10 +120,7 @@ bestScorePath = "sounds/bestScore.wav"
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
-#init du score, du bestscore, et du lastscore
-score = 0
-with open("bestScore.txt") as f:
-    bestScore = int(f.readline())
+
 scoreTimer = time()
 fontPath = "font/BACKTO1982.TTF"
 scoreFont = pygame.font.Font(fontPath, 40)
@@ -142,8 +139,8 @@ endFont = pygame.font.Font(fontPath, 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topright=(width - 10,10))
 
-gameOverSurface = pygame.image.load("images/gameOver.png").convert_alpha()
-gameOverRect = (0,0)
+gameOverSurface = scoreLiveFont.render("GAME OVER".format(0), True, (0,0,0))
+gameOverRect = gameOverSurface.get_rect(midtop = (width / 2, height / 2 - gameOverSurface.get_size()[1] / 2))
 
 
 

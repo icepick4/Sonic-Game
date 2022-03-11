@@ -16,7 +16,7 @@ class Environment (Entity):
             return True
         return False
     
-    def getRand(self):
+    def getRandPos(self):
 
         if self.type == "cloud1" or self.type == "palm1":
             self.randX = randint(0,500)
@@ -40,6 +40,6 @@ class Environment (Entity):
             if self.type == "grass":
                 self.position = (width,height)
             else:
-                self.position = (width + self.getRand()[0],self.getRand()[1])
+                self.position = (width + self.getRandPos()[0],self.getRandPos()[1])
         self.changePosition(tick)
         screen.blit(self.surface,self.rect)

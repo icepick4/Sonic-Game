@@ -1,7 +1,5 @@
 import pygame
-from pygame.locals import *
 from time import time
-pygame.init()
 
 def animateGif(delay, nbImages, timeGif, state):
     delayGif = time() - timeGif

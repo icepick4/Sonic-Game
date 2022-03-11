@@ -1,32 +1,30 @@
+from register import *
+from variables import *
 try:
     import pygame
     from pygame.locals import *
 except:
     print("Vous n'avez pas téléchargé le module pygame ! \n Téléchargez le avec la commande ci-contre : pip install pygame")
-from time import time,sleep
+from time import time
 from random import randint,uniform, choice
-
 from functions import animateGif, playSound
-from variables import *
 from classes.Enemy import Enemy
-
-pygame.init()
 
 while playing:
     acceleration = score / 2
-    if acceleration > 600:
-        acceleration = 600
+    if acceleration > 666:
+        acceleration = 666
     #####################
     #ACTIONS DES TOUCHES#
-    #####################
+    #####################    
     for event in pygame.event.get():
         if event.type == QUIT:
             playing = False
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
             #on presse le bouton close
-            if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60 and lost and time() - endTime() > 3:
+            if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60 and lost and time() - endTime > 3:
                 playing = False
-        elif event.type == KEYDOWN:
+        elif event.type == KEYDOWN: 
             if event.key == K_SPACE and time() - endTime > 3:
                 #on peut sauter
                 if sonicJumpRect.onFloor():
@@ -57,10 +55,10 @@ while playing:
         rand = randint(1,10)
         easterEgg = -1
         if sonic1Rect.hp == 1:
-            randomHeart = randint(1,15)
+            randomHeart = randint(1,25)
             easterEgg = randint(1,1000)
         elif sonic1Rect.hp == 2:
-            randomHeart = randint(1,40)
+            randomHeart = randint(1,55)
         elif sonic1Rect.hp == 3:
             randomHeart = randint(1,100)
         elif sonic1Rect.hp == 4:
@@ -98,6 +96,9 @@ while playing:
         effectTime = time()
         damage = False
         healing = False
+    ##################
+    #j'essaye de mettre un grass en fond constamment pour cacher le trou du défilement, c'est moche
+    screen.blit(grassSurface,(0,height - 200))
 
     ############
     #LES SCORES#
@@ -152,7 +153,7 @@ while playing:
             enemies[i].run(mobsSpeed)
         
         enemies[i].changePosition(tick)
-        #si un ennemie touche sonic ...
+        #si un coeur touche sonic
         if enemies[i].rect.colliderect(sonicJumpRect.rect) and enemies[i].type == "heart":
             if time() - bestScoreTime > 0.5:
                 playSound(healingPath, 0.1)
@@ -160,13 +161,14 @@ while playing:
                 sonic1Rect.hp +=1
             healing = True
             enemiesToPop.append(i)
-        #si un ennemie atteind le mur
+        #si un ennemie touche sonic ...
         elif enemies[i].rect.colliderect(sonicJumpRect.rect):
             if time() - bestScoreTime > 0.5:
                 playSound(damagePath, 0.1)
             damage = True
             sonic1Rect.hp -=1
             enemiesToPop.append(i)
+        #si un ennemie atteind le mur
         elif enemies[i].enemyRestriction():
             enemiesToPop.append(i)
 
@@ -237,10 +239,11 @@ while playing:
     elif not lost:
         #affichage du gif à la main
         screen.blit(statesSonic[0][sonicState],(100,height - 200 - 144))
-        timeGif, sonicState = animateGif(0.1,4,timeGif, sonicState)
+        timeGif, sonicState = animateGif(0.2 - acceleration / 2000 if acceleration<300 else 0.07,4,timeGif, sonicState)
     #sinon on affiche sonic standing
     else:
         if time() - endTime < 3:
+            screen.fill((255,255,255))
             screen.blit(gameOverSurface,gameOverRect)
         else:
             screen.blit(statesSonic[1][sonicStandingState],(100,height - 200 - statesSonic[1][0].get_height()))
@@ -251,8 +254,14 @@ while playing:
     pygame.display.flip()
 pygame.quit()
 
+for i in range(len(scores)):
+    if players[i] == name:
+        scores[i] = bestScore
+
 with open('bestScore.txt', 'w') as f:
-    f.write(str(bestScore))
+    for i in range(len(players)):
+        f.write(players[i] + " " + str(scores[i]))
+        f.write("\n")
 
 
 
