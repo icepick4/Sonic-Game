@@ -10,5 +10,5 @@
 
 ## Important
 
-- Le meilleur score est enregistré dans le fichier "bestScore.txt" 
+- Le meilleur score est (1 bestScore pour chaque joueur enregistré) sauvé dans le fichier "bestScore.txt" 
 - Le jeu dépend du module Pygame
