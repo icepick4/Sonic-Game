@@ -1,9 +1,9 @@
 import pygame
 pygame.init()
-from Entity import Entity
+
 height = pygame.display.get_desktop_sizes()[0][1]
 width = pygame.display.get_desktop_sizes()[0][0]
-class Environment (Entity):
+class Entity:
     def __init__(self,rect):
         self.rect = rect
         self.speed = (0,0)

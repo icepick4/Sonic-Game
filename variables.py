@@ -2,6 +2,7 @@ from time import time
 import pygame
 from classes.Sonic import Sonic
 from classes.Entity import Entity
+from classes.Environment import Environment
 pygame.init()
 from random import randint,uniform
 
@@ -78,20 +79,19 @@ sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
 heartSurface = pygame.image.load("images/heart.png").convert_alpha()
 
 grassSurface = pygame.image.load("images/grass.png").convert_alpha()
-grassRect = Entity(grassSurface.get_rect(topleft=(0,height)))
-grassRect3 = Entity(grassSurface.get_rect(topleft=(width,height)))
-grassRect2 = Entity(grassSurface.get_rect(topleft=(width,height)))
+grassRect = Environment(grassSurface.get_rect(topleft=(0,height)), grassSurface,"grass")
+grass2Rect = Environment(grassSurface.get_rect(topleft=(width,height)), grassSurface,"grass")
 # grassSurface = pygame.transform.smoothscale(pygame.image.load("images/sol png.png").convert_alpha(),(1920,200))
 cloudSurface = pygame.image.load("images/cloud.png").convert_alpha()
-cloudRect = Entity(cloudSurface.get_rect(topleft=(width+randint(0,500),randint(200,height / 2))))
-cloud2Rect = Entity(cloudSurface.get_rect(topleft=(width + randint(1000,2500),randint(200,height / 2))))
+cloudRect = Environment(cloudSurface.get_rect(topleft=(width + randint(0,500),randint(200,height / 2))),cloudSurface, "cloud1")
+cloud2Rect = Environment(cloudSurface.get_rect(topleft=(width + randint(0,500),randint(200,height / 2))), cloudSurface ,"cloud2")
 cloudRect.speed = (620,0)
 cloud2Rect.speed = (550,0)
 
 palmSurface = pygame.image.load("images/palm-min.png").convert_alpha()
 palm2Surface = pygame.image.load("images/palm2-min.png").convert_alpha()
-palmRect = Entity(palmSurface.get_rect(topleft=(width+randint(0,500),height - 200)))
-palm2Rect = Entity(palm2Surface.get_rect(topleft=(width + randint(1000,2500),height - 200)))
+palmRect = Environment(palmSurface.get_rect(topleft=(width+randint(0,500),height - 200)), palmSurface, "palm1")
+palm2Rect = Environment(palm2Surface.get_rect(topleft=(width + randint(1000,2500),height - 200)), palm2Surface, "palm2")
 palm2Rect.speed = (475,0)
 palmRect.speed = (475,0)
 ######################

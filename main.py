@@ -57,28 +57,28 @@ while playing:
         rand = randint(1,10)
         easterEgg = -1
         if sonic1Rect.hp == 1:
-            randomHeart = randint(1,8)
+            randomHeart = randint(1,15)
             easterEgg = randint(1,1000)
         elif sonic1Rect.hp == 2:
-            randomHeart = randint(1,25)
+            randomHeart = randint(1,40)
         elif sonic1Rect.hp == 3:
-            randomHeart = randint(1,50)
+            randomHeart = randint(1,100)
         elif sonic1Rect.hp == 4:
             randomHeart = randint(1,200)
         if rand <= 6:
             if 0 < rand <= 2: 
-                enemies.append(Enemy(rockSurface.get_rect(topleft=(width, height - 200)), "littleMob"))
+                enemies.append(Enemy(rockSurface.get_rect(topleft=(width, height - 200)), rockSurface, "littleMob"))
             elif 2 < rand <= 4:
-                enemies.append(Enemy(statesDuck[duckState].get_rect(topleft=(width, height - 200)), "mediumMob"))
+                enemies.append(Enemy(statesDuck[duckState].get_rect(topleft=(width, height - 200)), statesDuck[duckState], "mediumMob"))
             else:
-                enemies.append(Enemy(enemySpikeSurface.get_rect(topleft=(width, height - 200)), "bigMob"))
+                enemies.append(Enemy(enemySpikeSurface.get_rect(topleft=(width, height - 200)), enemySpikeSurface,  "bigMob"))
         else:
-            enemies.append(Enemy(enemyBirdSurface.get_rect(topleft=(width, 300)), "flyingMob"))
+            enemies.append(Enemy(enemyBirdSurface.get_rect(topleft=(width, 300)), enemyBirdSurface, "flyingMob"))
         if randomHeart == 1 and enemies[len(enemies)-1].type != "heart" and enemies[len(enemies)-2].type != "heart":
-            enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
+            enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), heartSurface, "heart"))
         if easterEgg == 1:
             for i in range(4):
-                enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), "heart"))
+                enemies.append(Enemy(heartSurface.get_rect(topleft=(width, height - randint(200,700))), heartSurface, "heart"))
         timeSpawn = time()
 
     #tick de la frame 
@@ -131,61 +131,26 @@ while playing:
         sonic1Rect.hp = 3
         playSound(lostPath,0.06)
         endTime = time()
-        
-    #herbe
-    #pygame.draw.rect(screen, (72,15,4), (0, height - 200, width, height - 200))
-    #pygame.draw.rect(screen, (103,196,12), (0, height - 200, width, 50))
+
     ############
     #LES DECORS#
     ############
     if not lost:
-        grassRect.speed = (mobsSpeed,0)
-        grassRect2.speed = (mobsSpeed,0)
-
-        if grassRect.loop():
-            grassRect.position = (width,height)
-        if grassRect2.loop():
-            grassRect2.position = (width,height)
-
-        grassRect.changePosition(tick)
-        grassRect2.changePosition(tick) 
-        screen.blit(grassSurface,grassRect)
-        screen.blit(grassSurface,grassRect2)
-
-    
-    if cloudRect.loop():
-        cloudRect.position = (width+randint(0,500),randint(200,height / 2))
-    if cloud2Rect.loop():
-        cloud2Rect.position = (width + randint(1000,2500),randint(200,height / 2))
-    
-    cloudRect.changePosition(tick)
-    cloud2Rect.changePosition(tick)
-    screen.blit(cloudSurface,cloudRect) 
-    screen.blit(cloudSurface,cloud2Rect)
-
-    if palmRect.loop():
-        palmRect.position = (width + randint(0,500),height - 200)
-    if palm2Rect.loop():
-        palm2Rect.position = (width + randint(1000,2500),height - 200)
-    palmRect.changePosition(tick)
-    palm2Rect.changePosition(tick)
-    screen.blit(palmSurface,palmRect) 
-    screen.blit(palm2Surface,palm2Rect)
+        grassRect.animate(mobsSpeed, 0, tick, screen)
+        grass2Rect.animate(mobsSpeed, 0, tick, screen)
+    cloudRect.animate(620,0, tick, screen)
+    cloud2Rect.animate(550,0, tick, screen)
+    palmRect.animate(475,0, tick, screen)
+    palm2Rect.animate(475,0, tick, screen)
 
     ##############
     #LES ENNEMIES#
     ##############
     enemiesToPop = []
     for i in range(len(enemies)):
-        if enemies[i].speed == (0,0):
-            if enemies[i].type == "flyingMob":
-                enemies[i].changeSpeed((mobsSpeed + mobsSpeed*0.05,choice([randint(int(-400+mobsSpeed * 0.3),int(-300+mobsSpeed * 0.3)),randint(int(-120+mobsSpeed * 0.1),int(100+mobsSpeed * 0.1))])))   
-            elif enemies[i].type == "heart":
-                enemies[i].changeSpeed((mobsSpeed + randint(0,500),0))
-            elif enemies[i].type == "mediumMob":
-                enemies[i].changeSpeed((mobsSpeed + mobsSpeed*0.05,0))
-            else:
-                enemies[i].changeSpeed((mobsSpeed,0))
+        if not enemies[i].moving():
+            enemies[i].run(mobsSpeed)
+        
         enemies[i].changePosition(tick)
         #si un ennemie touche sonic ...
         if enemies[i].rect.colliderect(sonicJumpRect.rect) and enemies[i].type == "heart":
@@ -207,22 +172,16 @@ while playing:
 
         ####################
         #AFFICHAGE DES MOBS#
-        ####################       
-        #on blit les bonnes image en fonction du type de mob
-        if enemies[i].type == "littleMob":
-            screen.blit(rockSurface,enemies[i].rect)   
-        elif enemies[i].type == "mediumMob":
+        ####################  
+        if enemies[i].type != "mediumMob":
+            enemies[i].display(screen)
+        else:
             screen.blit(statesDuck[duckState],enemies[i].rect)
             delayGif = time() - timeGifDuck
             timeGifDuck, duckState = animateGif(0.08,2,timeGifDuck, duckState)
-        elif enemies[i].type == "bigMob":
-            screen.blit(enemySpikeSurface,enemies[i].rect)
-        elif enemies[i].type == "flyingMob":
-            screen.blit(enemyBirdSurface,enemies[i].rect)
-        else:
-            screen.blit(heartSurface,enemies[i].rect)
     for i in enemiesToPop:
         enemies.pop(i)
+
     #################
     #GESTION DU SAUT#
     #################
@@ -257,7 +216,7 @@ while playing:
     #affichage du coeur en fonction des pv de sonic
     for i in range(sonic1Rect.hp):
         screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
-        
+
     ####################
     #AFFICHAGE DU PERSO#
     ####################
