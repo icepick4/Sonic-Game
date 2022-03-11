@@ -139,6 +139,7 @@ endFont = pygame.font.Font(fontPath, 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topright=(width - 10,10))
 
+#écran de fin
 gameOverSurface = scoreLiveFont.render("GAME OVER".format(0), True, (0,0,0))
 gameOverRect = gameOverSurface.get_rect(midtop = (width / 2, height / 2 - gameOverSurface.get_size()[1] / 2))
 

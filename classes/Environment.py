@@ -1,9 +1,10 @@
 import pygame
-pygame.init()
 from classes.Entity import Entity
 from random import randint
 height = pygame.display.get_desktop_sizes()[0][1]
 width = pygame.display.get_desktop_sizes()[0][0]
+
+
 class Environment (Entity):
     def __init__(self,rect, surface, type):
         Entity.__init__(self, rect)
@@ -17,7 +18,6 @@ class Environment (Entity):
         return False
     
     def getRandPos(self):
-
         if self.type == "cloud1" or self.type == "palm1":
             self.randX = randint(0,500)
             if self.type == "palm1":
@@ -34,6 +34,7 @@ class Environment (Entity):
             self.randX = 0
             self.randY = 0
         return self.randX, self.randY
+
     def animate(self,speedX, speedY, tick, screen):
         self.speed = (speedX,speedY)
         if self.loop():

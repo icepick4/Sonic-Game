@@ -1,7 +1,6 @@
 from classes.Entity import Entity
 from random import randint, choice
-from time import time
-from functions import animateGif
+
 class Enemy(Entity):
     def __init__(self, rect, surface, type):
         Entity.__init__(self, rect)

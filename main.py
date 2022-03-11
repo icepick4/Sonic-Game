@@ -6,7 +6,7 @@ try:
 except:
     print("Vous n'avez pas téléchargé le module pygame ! \n Téléchargez le avec la commande ci-contre : pip install pygame")
 from time import time
-from random import randint,uniform, choice
+from random import randint,uniform
 from functions import animateGif, playSound
 from classes.Enemy import Enemy
 
@@ -98,7 +98,7 @@ while playing:
         healing = False
     ##################
     #j'essaye de mettre un grass en fond constamment pour cacher le trou du défilement, c'est moche
-    screen.blit(grassSurface,(0,height - 200))
+    #screen.blit(grassSurface,(0,height - 200))
 
     ############
     #LES SCORES#

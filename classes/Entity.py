@@ -1,8 +1,3 @@
-import pygame
-pygame.init()
-
-height = pygame.display.get_desktop_sizes()[0][1]
-width = pygame.display.get_desktop_sizes()[0][0]
 class Entity:
     def __init__(self,rect):
         self.rect = rect
