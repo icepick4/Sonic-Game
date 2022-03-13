@@ -201,9 +201,11 @@ while playing:
         screen.blit(endSurface,endRect)
         screen.blit(lastScoreSurface,lastScoreRect)
         screen.blit(bestScoreSurface,bestScoreRect)
+        screen.blit(pseudoSurface, pseudoRect)
     elif not lost:
         scoreRect = scoreSurface.get_rect(topright=(width,10))
         screen.blit(scoreSurface,scoreRect)
+        
         
     if score%100 == 0 and score !=0 and score%1000 != 0 and time() - timeScoreSound > 0.2:
         playSound(scorePath,0.03)
@@ -216,8 +218,10 @@ while playing:
     #LES PV#
     ########
     #affichage du coeur en fonction des pv de sonic
-    for i in range(sonic1Rect.hp):
-        screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
+    if not lost:
+        for i in range(sonic1Rect.hp):
+            screen.blit(heartSurface,(heartRect[0] + i*100,heartRect[1]))
+
 
     ####################
     #AFFICHAGE DU PERSO#
@@ -254,14 +258,19 @@ while playing:
     pygame.display.flip()
 pygame.quit()
 
-for i in range(len(scores)):
-    if players[i] == name:
-        scores[i] = bestScore
-
+scores[playerIndex] = bestScore
 with open('bestScore.txt', 'w') as f:
     for i in range(len(players)):
-        f.write(players[i] + " " + str(scores[i]))
-        f.write("\n")
+        if newPlayer:
+            if i == len(players) - 1 and i != 0:
+                f.write("\n" + players[i] + " " + str(scores[i]))
+            else:
+                f.write(players[i] + " " + str(scores[i]))
+        else:
+            if i == playerIndex:
+                f.write(players[i] + " " + str(scores[i]) + "\n")
+            else:
+                f.write(players[i] + " " + str(scores[i]))
 
 
 

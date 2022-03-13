@@ -16,6 +16,7 @@ class Entity:
         y -= speedY * time
         self.position = (x,y)
         self.rect.bottomleft = self.position
+
         
         
     
