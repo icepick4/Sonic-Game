@@ -37,7 +37,6 @@ bestScoreTime = time()
 jumping = False
 falling = False
 #variable qui maintient le while du jeu
-playing = True
 #état de dégat pour effet visuel (fond rouge) ou heal (fond vert)
 damage = False
 healing = False

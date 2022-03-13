@@ -27,6 +27,7 @@ while logging:
         name = "Enter your name"
     for event in pygame.event.get():
         if event.type == QUIT:
+            playing = False
             logging = False
         elif event.type == KEYDOWN:
             if (event.unicode.isalpha() or event.unicode.isnumeric()) and len(name) < 20:
