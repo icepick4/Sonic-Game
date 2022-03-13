@@ -15,6 +15,8 @@
 
 ## Screeshots
 
+While logging :
+![Screenshot_2](https://user-images.githubusercontent.com/82316285/158080310-c3e63a9b-1ad2-4bb5-9312-7bea79446a3a.png)
 Start screen :
 ![sonic](https://user-images.githubusercontent.com/82316285/157952981-d5a32617-6b0a-40ab-965c-142cf0290684.png)
 While playing :
