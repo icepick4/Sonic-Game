@@ -1,14 +1,21 @@
 # Sonic Game
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+## Keys
 
-## Commandes
+- Jump : Space bar
 
-- Sauter : Barre espace
+## Goal
 
-## But du jeu
-
-- Faire le meilleur score possible en esquivant les ennemies !
+- Make the best score while dodging enemies !
 
 ## Important
 
-- Le meilleur score est (1 bestScore pour chaque joueur enregistré) sauvé dans le fichier "bestScore.txt" 
-- Le jeu dépend du module Pygame
+- The best score (one best score per player registered) is saved in "bestScore.txt" 
+- The game depends of the Pygame module
+
+## Screeshots
+
+Start screen :
+![sonic](https://user-images.githubusercontent.com/82316285/157952981-d5a32617-6b0a-40ab-965c-142cf0290684.png)
+While playing :
+![sonic2](https://user-images.githubusercontent.com/82316285/157953048-5c93a8ec-378a-43bd-beef-9b751649593c.png)
