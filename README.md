@@ -13,7 +13,7 @@
 - The best score (one best score per player registered) is saved in "bestScore.txt" 
 - The game depends of the Pygame module
 
-## Screeshots
+## Screenshots
 
 While logging :
 ![Screenshot_2](https://user-images.githubusercontent.com/82316285/158080310-c3e63a9b-1ad2-4bb5-9312-7bea79446a3a.png)
