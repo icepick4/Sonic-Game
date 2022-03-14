@@ -258,19 +258,24 @@ while playing:
     pygame.display.flip()
 pygame.quit()
 
-scores[playerIndex] = bestScore
-with open('bestScore.txt', 'w') as f:
-    for i in range(len(players)):
-        if newPlayer:
-            if i == len(players) - 1 and i != 0:
-                f.write("\n" + players[i] + " " + str(scores[i]))
-            else:
-                f.write(players[i] + " " + str(scores[i]))
-        else:
-            if i == playerIndex:
-                f.write(players[i] + " " + str(scores[i]) + "\n")
-            else:
-                f.write(players[i] + " " + str(scores[i]))
+# scores[playerIndex] = bestScore
+# with open('bestScore.txt', 'w') as f:
+#     for i in range(len(players)):
+#         if newPlayer:
+#             if i == len(players) - 1 and i != 0:
+#                 f.write("\n" + players[i] + " " + str(scores[i]))
+#             else:
+#                 f.write(players[i] + " " + str(scores[i]))
+#         else:
+#             if i == playerIndex:
+#                 f.write(players[i] + " " + str(scores[i]) + "\n")
+#             else:
+#                 f.write(players[i] + " " + str(scores[i]))
+scores[name] = bestScore
+print(scores)
+with open ("bestScore.pickle", "wb") as f:
+    pickle.dump(scores, f)
+
 
 
 

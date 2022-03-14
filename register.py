@@ -1,5 +1,6 @@
 from time import sleep
 import pygame
+import pickle
 from pygame.locals import *
 pygame.init()
 windowSize = pygame.display.get_desktop_sizes()[0]
@@ -8,7 +9,7 @@ width = windowSize[0]
 height = windowSize[1]
 
 logging = True
-newPlayer = False
+newPlayer = True
 name = ""
 fontPath = "font/BACKTO1982.TTF"
 font = pygame.font.Font(fontPath, width // 30)
@@ -50,28 +51,40 @@ score = 0
 #     name = input("Entrez votre nom\n")
 #     if len(name) < 25:
 #         registered = True
-with open("bestScore.txt") as f:
-    lines = f.readlines()
-    for i in range(len(lines)):
-        lines[i] = lines[i].split(" ")
+# scores = {}
+try:
+    with open("bestScore.pickle", "rb") as f:
+        scores = pickle.load(f)
+        # for i in range(len(lines)):
+        #     lines[i] = lines[i].split(" ")
+except:
+    scores = {}
+    with open("bestScore.pickle", "wb") as f:
+        pickle.dump(scores, f)
 
-players = []
-scores = []
-for i in lines:
-    players.append(i[0]) 
-    scores.append(i[1])
-    
-if name not in players:
-    with open('bestScore.txt', 'a') as f:
-        f.write(name + " 0")
-    players.append(name)
-    scores.append(0)
+for key,value in scores.items():
+    if key == name:
+        newPlayer = False
+        bestScore = value
+if newPlayer:
     bestScore = 0
-    newPlayer = True
-    playerIndex = len(players) - 1
-else:
-    for i in range(len(players)):
-        if players[i] == name:
-            bestScore = int(scores[i])
-            playerIndex = i
+# players = []
+# scores = []
+# for i in lines:
+#     players.append(i[0]) 
+#     scores.append(i[1])
+    
+# if name not in players:
+#     with open('bestScore.pickle', 'a') as f:
+#         f.write(name + " 0")
+#     players.append(name)
+#     scores.append(0)
+#     bestScore = 0
+#     newPlayer = True
+#     playerIndex = len(players) - 1
+# else:
+#     for i in range(len(players)):
+#         if players[i] == name:
+#             bestScore = int(scores[i])
+#             playerIndex = i
  
