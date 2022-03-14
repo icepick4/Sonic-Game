@@ -11,7 +11,7 @@ logging = True
 newPlayer = False
 name = ""
 fontPath = "font/BACKTO1982.TTF"
-font = pygame.font.Font(fontPath, 90)
+font = pygame.font.Font(fontPath, width // 30)
 bigFont = pygame.font.Font(fontPath, 80)
 nameSurface = bigFont.render("{0}".format(name), True, (0,0,0))
 nameRect = nameSurface.get_rect(midtop=(width / 2, height / 2))
@@ -24,20 +24,21 @@ while logging:
     screen.blit(nameSurface, nameRect)
     screen.blit(textSurface, textRect)
     if len(name) == 0:
-        name = "Enter your name"
+        name = "Type your name"
     for event in pygame.event.get():
         if event.type == QUIT:
             playing = False
             logging = False
         elif event.type == KEYDOWN:
             if (event.unicode.isalpha() or event.unicode.isnumeric()) and len(name) < 20:
-                if name == "Enter your name":
+                if name == "Type your name":
                     name = ""
                 name += event.unicode
-            elif event.key == K_BACKSPACE or event.key == K_KP_ENTER:
-                if name != "Enter your name":
+            elif event.key == K_BACKSPACE:
+                if name != "Type your name":
                     name = name[0:len(name)-1]
-            elif event.key == K_RETURN and len(name) > 0:
+            elif (event.key == K_RETURN  or event.key == K_KP_ENTER) and len(name) > 0 and name != "Type your name":
+                playing = True
                 logging = False
     pygame.display.flip()
 

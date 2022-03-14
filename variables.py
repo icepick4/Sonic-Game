@@ -123,7 +123,7 @@ bestScorePath = "sounds/bestScore.wav"
 scoreTimer = time()
 fontPath = "font/BACKTO1982.TTF"
 scoreFont = pygame.font.Font(fontPath, 40)
-bigFont = pygame.font.Font(fontPath, 70)
+bigFont = pygame.font.Font(fontPath, width // 30)
 scoreLiveFont = pygame.font.Font(fontPath, 150) 
 scoreSurface = scoreLiveFont.render("{0}".format(0), True, (0,0,0))
 lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
@@ -143,7 +143,7 @@ gameOverSurface = scoreLiveFont.render("GAME OVER".format(0), True, (0,0,0))
 gameOverRect = gameOverSurface.get_rect(midtop = (width / 2, height / 2 - gameOverSurface.get_size()[1] / 2))
 
 #pseudo
-pseudoFont = pygame.font.Font(fontPath, 80)
+pseudoFont = pygame.font.Font(fontPath, int(width // 3 // len(name)))
 pseudoSurface = pseudoFont.render("{0}".format(name), True, (0,0,0))
 pseudoRect = pseudoSurface.get_rect(topleft = (30,30))
 
