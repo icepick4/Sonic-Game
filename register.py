@@ -47,16 +47,9 @@ while logging:
 registered = False
 #init du bestscore
 score = 0
-# while not registered:
-#     name = input("Entrez votre nom\n")
-#     if len(name) < 25:
-#         registered = True
-# scores = {}
 try:
     with open("bestScore.pickle", "rb") as f:
         scores = pickle.load(f)
-        # for i in range(len(lines)):
-        #     lines[i] = lines[i].split(" ")
 except:
     scores = {}
     with open("bestScore.pickle", "wb") as f:
@@ -68,23 +61,4 @@ for key,value in scores.items():
         bestScore = value
 if newPlayer:
     bestScore = 0
-# players = []
-# scores = []
-# for i in lines:
-#     players.append(i[0]) 
-#     scores.append(i[1])
-    
-# if name not in players:
-#     with open('bestScore.pickle', 'a') as f:
-#         f.write(name + " 0")
-#     players.append(name)
-#     scores.append(0)
-#     bestScore = 0
-#     newPlayer = True
-#     playerIndex = len(players) - 1
-# else:
-#     for i in range(len(players)):
-#         if players[i] == name:
-#             bestScore = int(scores[i])
-#             playerIndex = i
  

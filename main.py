@@ -139,10 +139,17 @@ while playing:
     if not lost:
         grassRect.animate(mobsSpeed, 0, tick, screen)
         grass2Rect.animate(mobsSpeed, 0, tick, screen)
-    cloudRect.animate(620,0, tick, screen)
-    cloud2Rect.animate(550,0, tick, screen)
-    palmRect.animate(475,0, tick, screen)
-    palm2Rect.animate(475,0, tick, screen)
+        cloudRect.animate(620,0, tick, screen)
+        cloud2Rect.animate(550,0, tick, screen)
+        palmRect.animate(475,0, tick, screen)
+        palm2Rect.animate(475,0, tick, screen)
+    else:
+        cloudRect.animate(160,0, tick, screen)
+        cloud2Rect.animate(70,0, tick, screen)
+        palmRect.position = (width / 4, height - 200)
+        palm2Rect.position = (width / 1.3, height - 200)
+        palmRect.animate(0,0, tick, screen)
+        palm2Rect.animate(0,0, tick, screen)
 
     ##############
     #LES ENNEMIES#
@@ -258,21 +265,7 @@ while playing:
     pygame.display.flip()
 pygame.quit()
 
-# scores[playerIndex] = bestScore
-# with open('bestScore.txt', 'w') as f:
-#     for i in range(len(players)):
-#         if newPlayer:
-#             if i == len(players) - 1 and i != 0:
-#                 f.write("\n" + players[i] + " " + str(scores[i]))
-#             else:
-#                 f.write(players[i] + " " + str(scores[i]))
-#         else:
-#             if i == playerIndex:
-#                 f.write(players[i] + " " + str(scores[i]) + "\n")
-#             else:
-#                 f.write(players[i] + " " + str(scores[i]))
 scores[name] = bestScore
-print(scores)
 with open ("bestScore.pickle", "wb") as f:
     pickle.dump(scores, f)
 
