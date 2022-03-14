@@ -209,6 +209,7 @@ while playing:
         screen.blit(lastScoreSurface,lastScoreRect)
         screen.blit(bestScoreSurface,bestScoreRect)
         screen.blit(pseudoSurface, pseudoRect)
+        #playMusic(mainMusic)
     elif not lost:
         scoreRect = scoreSurface.get_rect(topright=(width,10))
         screen.blit(scoreSurface,scoreRect)

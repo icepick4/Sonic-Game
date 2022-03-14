@@ -115,7 +115,8 @@ lostPath = "sounds/lost.wav"
 scorePath = "sounds/score.wav"
 score1000Path = "sounds/bestscore.wav"
 bestScorePath = "sounds/bestScore.wav"
-
+mainMusic = "sounds/mainMusic.wav"
+playingMusic = "sound/playingMusic.wav"
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
@@ -147,6 +148,9 @@ pseudoFont = pygame.font.Font(fontPath, int(width // 3 // len(name)))
 pseudoSurface = pseudoFont.render("{0}".format(name), True, (0,0,0))
 pseudoRect = pseudoSurface.get_rect(topleft = (30,30))
 
-
+#background music
+pygame.mixer.music.load("sounds/mainMusic.wav")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.18)
 
 
