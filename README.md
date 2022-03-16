@@ -10,7 +10,7 @@
 
 ## Important
 
-- The best score (one best score per player registered) is saved in "bestScore.txt" 
+- The best score (one best score per player registered) is saved in "bestScore.pickle" 
 - The game depends of the Pygame module
 
 ## Screenshots
