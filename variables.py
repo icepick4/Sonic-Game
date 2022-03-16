@@ -1,4 +1,5 @@
 from time import time
+from register import *
 import pygame       
 pygame.init()
 from classes.Sonic import Sonic
@@ -43,6 +44,7 @@ healing = False
 bestScoreBeaten = False
 #état qui définit si on a perdu ou non
 lost = True
+highScores = True
 #état qui définie quel image du gif on affiche
 sonicState = 0
 sonicStandingState = 0
@@ -138,6 +140,14 @@ restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
 endFont = pygame.font.Font(fontPath, 50)
 endSurface = endFont.render("CLOSE", True, (0,0,0))
 endRect = endSurface.get_rect(topright=(width - 10,10))
+
+#bouton bestscores screen
+scoresScreenSurface = endFont.render("HIGHSCORES", True, (0,0,0))
+scoresScreenRect = scoresScreenSurface.get_rect(topright=(width - 10,75))
+
+#exit button
+exitSurface = endFont.render("EXIT", True, (0,0,0))
+exitRect = exitSurface.get_rect(topleft=(10,10))
 
 #écran de fin
 gameOverSurface = scoreLiveFont.render("GAME OVER".format(0), True, (0,0,0))

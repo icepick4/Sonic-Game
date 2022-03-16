@@ -1,5 +1,6 @@
 from register import *
 from variables import *
+from highScoresScreen import *
 try:
     import pygame
     from pygame.locals import *
@@ -24,6 +25,9 @@ while playing:
             #on presse le bouton close
             if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60 and lost and time() - endTime > 3:
                 playing = False
+            #on presse le bouton highscores
+            if windowSize[0]-250 < event.pos[0] < windowSize[0] and 75 < event.pos[1] < 125 and lost and time() - endTime > 3:
+                playing = Screen(True)
         elif event.type == KEYDOWN: 
             if event.key == K_SPACE and time() - endTime > 3:
                 #on peut sauter
@@ -132,6 +136,9 @@ while playing:
         sonic1Rect.hp = 3
         playSound(lostPath,0.06)
         endTime = time()
+        scores[name] = bestScore
+        with open ("bestScore.pickle", "wb") as f:
+            pickle.dump(scores, f)
 
     ############
     #LES DECORS#
@@ -206,6 +213,7 @@ while playing:
     ############
     if lost:
         screen.blit(endSurface,endRect)
+        screen.blit(scoresScreenSurface, scoresScreenRect)
         screen.blit(lastScoreSurface,lastScoreRect)
         screen.blit(bestScoreSurface,bestScoreRect)
         screen.blit(pseudoSurface, pseudoRect)
@@ -265,11 +273,6 @@ while playing:
 
     pygame.display.flip()
 pygame.quit()
-
-scores[name] = bestScore
-with open ("bestScore.pickle", "wb") as f:
-    pickle.dump(scores, f)
-
 
 
 

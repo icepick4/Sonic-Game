@@ -1,4 +1,4 @@
-from time import sleep
+from time import time
 import pygame
 import pickle
 from pygame.locals import *
@@ -18,14 +18,24 @@ nameSurface = bigFont.render("{0}".format(name), True, (0,0,0))
 nameRect = nameSurface.get_rect(midtop=(width / 2, height / 2))
 textSurface = font.render("Press RETURN to continue", True, (0,0,0))
 textRect = textSurface.get_rect(midtop = (width/2, 50))
+cursorSurface = font.render("-", True, (50,50,50))
+cursorRect = cursorSurface.get_rect(topleft=(nameRect.topright))
+cursorTime = time()
 while logging:
+    
+    cursorRect = cursorSurface.get_rect(topleft = (nameRect.topright))
     screen.fill((150,150,150))
     nameSurface = font.render("{0}".format(name), True, (0,0,0))
     nameRect = nameSurface.get_rect(midtop=(width / 2, height / 2))
     screen.blit(nameSurface, nameRect)
-    screen.blit(textSurface, textRect)
+
+    if int(((time()))*2.2)%2 == 0 and len(name) < 20:
+        screen.blit(cursorSurface, cursorRect)
+        cursorTime = time()
     if len(name) == 0:
         name = "Type your name"
+    if name != "Type your name":
+        screen.blit(textSurface, textRect)
     for event in pygame.event.get():
         if event.type == QUIT:
             playing = False
