@@ -3,17 +3,23 @@ from pygame.locals import *
 from variables import scores, bigFont, width, height, screen, exitSurface, exitRect
 
 
-
-def Screen(looping):
+def ScreenScores(looping):
+    exitSurface = bigFont.render("EXIT", True, (0,0,0))
     while looping:
         ctr = 0
         screen.fill((150,150,150))
         for event in pygame.event.get():
             if event.type == QUIT:
                 looping = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
-                if 10 < event.pos[0] < 160 and 10 < event.pos[1] < 60:
+            elif event.type == pygame.MOUSEMOTION:
+                if exitRect.left < event.pos[0] < exitRect.right and exitRect.top < event.pos[1] < exitRect.bottom:
+                    exitSurface = bigFont.render("EXIT", True, (255,60,60))
+                else:
+                    exitSurface = bigFont.render("EXIT", True, (0,0,0))
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if exitRect.left < event.pos[0] < exitRect.right and exitRect.top < event.pos[1] < exitRect.bottom:
                     looping = False
+            
         screen.blit(exitSurface, exitRect)
         sortedScores = sorted(scores.items(), key=lambda x: x[1], reverse=True)  
         sortedScores = sortedScores[0:5] 

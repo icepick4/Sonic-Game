@@ -19,15 +19,27 @@ while playing:
     #ACTIONS DES TOUCHES#
     #####################    
     for event in pygame.event.get():
+        
         if event.type == QUIT:
             playing = False
+        elif event.type == pygame.MOUSEMOTION:
+            if endRect.left < event.pos[0] < endRect.right and endRect.top < event.pos[1] < endRect.bottom and lost and time() - endTime > 3:
+                endSurface = endFont.render("CLOSE", True, (255,60,60))
+            else:
+                endSurface = endFont.render("CLOSE", True, (0,0,0))
+            if scoresScreenRect.left < event.pos[0] < scoresScreenRect.right and scoresScreenRect.top < event.pos[1] < scoresScreenRect.bottom and lost and time() - endTime > 3:
+                scoresScreenSurface = endFont.render("HIGHSCORES", True, (255,60,60))
+            else:
+                scoresScreenSurface = endFont.render("HIGHSCORES", True, (0,0,0))
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 :
             #on presse le bouton close
-            if windowSize[0]-180 < event.pos[0] < windowSize[0] and 10 < event.pos[1] < 60 and lost and time() - endTime > 3:
+            if endRect.left < event.pos[0] < endRect.right and endRect.top < event.pos[1] < endRect.bottom and lost and time() - endTime > 3: 
                 playing = False
             #on presse le bouton highscores
-            if windowSize[0]-250 < event.pos[0] < windowSize[0] and 75 < event.pos[1] < 125 and lost and time() - endTime > 3:
-                playing = Screen(True)
+            if scoresScreenRect.left < event.pos[0] < scoresScreenRect.right and scoresScreenRect.top < event.pos[1] < scoresScreenRect.bottom and lost and time() - endTime > 3:
+                
+                playing = ScreenScores(True)
+                
         elif event.type == KEYDOWN: 
             if event.key == K_SPACE and time() - endTime > 3:
                 #on peut sauter
