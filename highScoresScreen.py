@@ -19,10 +19,11 @@ def ScreenScores(looping):
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if exitRect.left < event.pos[0] < exitRect.right and exitRect.top < event.pos[1] < exitRect.bottom:
                     looping = False
-            
         screen.blit(exitSurface, exitRect)
+
         sortedScores = sorted(scores.items(), key=lambda x: x[1], reverse=True)  
         sortedScores = sortedScores[0:5] 
+        
         for key, value in sortedScores:
             if ctr == 0:
                 ctrSurface = bigFont.render("{}".format(ctr +1), True, (255,215,0))

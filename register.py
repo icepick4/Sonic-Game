@@ -71,4 +71,3 @@ for key,value in scores.items():
         bestScore = value
 if newPlayer:
     bestScore = 0
- 
