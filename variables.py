@@ -1,166 +1,185 @@
+"""variables init"""
 from time import time
-from register import *
-import pygame       
-pygame.init()
-from classes.Sonic import Sonic
-from classes.Entity import Entity
-from classes.Environment import Environment
-from register import *
 from random import randint
-windowSize = pygame.display.get_desktop_sizes()[0]
-screen = pygame.display.set_mode(windowSize)
-width = windowSize[0]
-height = windowSize[1]
+import pygame
+from classes.sonic import Sonic
+from classes.environment import Environment
+from register import width, height, BESTSCORE, NAMEID
+
 
 ############
 #LES TIMERS#
 ############
 #init du delais d'affichage du gif
-timeGif = time()
-timeGifDuck = time()
-timeGifCharac = time()
+time_gif = time()
+time_gif_duck = time()
+time_gif_charac = time()
 #init du départ du saut
-startJump = time()
-timeJump = 0.4
+start_jump = time()
+TIMEJUMP = 0.4
 #init du temps de spawn des mobs
-timeSpawn = time()
+time_spawn = time()
 #init temps d'effet de fond
-effectTime = time()
-timeScoreSound = time()
+effect_time = time()
+time_score_sound = time()
 #timer pour obtenir les ticks
 timer = pygame.time.Clock()
-endTime = time() - 3
-bestScoreTime = time()
+end_time = time() - 3
+best_score_time = time()
 ##############
 #LES BOOLEENS#
 ##############
 #état de saut
-jumping = False
-falling = False
+JUMPING = False
+FALLING = False
 #variable qui maintient le while du jeu
 #état de dégat pour effet visuel (fond rouge) ou heal (fond vert)
-damage = False
-healing = False
-bestScoreBeaten = False
+DAMAGE = False
+HEALING = False
+BESTSCOREBEATEN = False
 #état qui définit si on a perdu ou non
-lost = True
-highScores = True
+LOST = True
+HIGHSCORES = True
 #état qui définie quel image du gif on affiche
-sonicState = 0
-sonicStandingState = 0
+SONICSTATE = 0
+SONICSTANDINGSTATE = 0
 #état qui définie quel image du gif on affiche
-duckState = 0
+DUCKSTATE = 0
 
 ############
 #LES IMAGES#
 ############
 #personnage en gif
 #tableau des états de sonic : tab[0][i] -> état de saut, tab[1][i] -> état de standing
-statesSonic = [[0,0,0,0],[0,0]]
-statesSonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
-statesSonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
-statesSonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
-statesSonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
-statesSonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
-statesSonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
+states_sonic = [[0,0,0,0],[0,0]]
+states_sonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
+states_sonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
+states_sonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
+states_sonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
+states_sonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
+states_sonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
 
 #le canard en gif
-statesDuck = [0,0]
-statesDuck[0] = pygame.image.load("images/duck1.png").convert_alpha()
-statesDuck[1] = pygame.image.load("images/duck2.png").convert_alpha()
+states_duck = [0,0]
+states_duck[0] = pygame.image.load("images/duck1.png").convert_alpha()
+states_duck[1] = pygame.image.load("images/duck2.png").convert_alpha()
 #init des enemies
-enemySpikeSurface = pygame.image.load("images/spike.png").convert_alpha()
-enemyBirdSurface = pygame.image.load("images/bird.png").convert_alpha()
-rockSurface = pygame.image.load("images/rock.png").convert_alpha()
+enemy_spike_surface = pygame.image.load("images/spike.png").convert_alpha()
+enemy_bird_surface = pygame.image.load("images/bird.png").convert_alpha()
+rock_surface = pygame.image.load("images/rock.png").convert_alpha()
 enemies = []
 #sonic en saut
-sonicJumpSurface = pygame.image.load("images/sonicJump.png").convert_alpha()
+sonic_jump_surface = pygame.image.load("images/sonicJump.png").convert_alpha()
 
 #le coeur
-heartSurface = pygame.image.load("images/heart.png").convert_alpha()
+heart_surface = pygame.image.load("images/heart.png").convert_alpha()
 
-grassSurface = pygame.image.load("images/grass.png").convert_alpha()
-grassRect = Environment(grassSurface.get_rect(topleft=(0,height)), grassSurface,"grass")
-grass2Rect = Environment(grassSurface.get_rect(topleft=(width,height)), grassSurface,"grass")
-# grassSurface = pygame.transform.smoothscale(pygame.image.load("images/sol png.png").convert_alpha(),(1920,200))
-cloudSurface = pygame.image.load("images/cloud.png").convert_alpha()
-cloudRect = Environment(cloudSurface.get_rect(topleft=(width + randint(0,500),randint(200,height / 2))),cloudSurface, "cloud1")
-cloud2Rect = Environment(cloudSurface.get_rect(topleft=(width + randint(0,500),randint(200,height / 2))), cloudSurface ,"cloud2")
-cloudRect.speed = (620,0)
-cloud2Rect.speed = (550,0)
+grass_surface = pygame.image.load("images/grass.png").convert_alpha()
+grass_rect = Environment(grass_surface.get_rect(topleft=(0,height)), grass_surface,"grass")
+grass_2_rect = Environment(grass_surface.get_rect(topleft=(width,height)), grass_surface,"grass")
+cloud_surface = pygame.image.load("images/cloud.png").convert_alpha()
+cloud_rect = Environment(cloud_surface.get_rect(
+                                                topleft=(
+                                                        width + randint(0,500),
+                                                        randint(200,height / 2)
+                                                        )
+                                                ),
+                                                cloud_surface, "cloud1"
+                                            )
+cloud_2_rect = Environment(cloud_surface.get_rect(
+                                                topleft=(
+                                                        width + randint(0,500),
+                                                        randint(200,height / 2)
+                                                        )
+                                                    ),
+                                                cloud_surface ,"cloud2"
+                                            )
+cloud_rect.speed = (620,0)
+cloud_2_rect.speed = (550,0)
 
-palmSurface = pygame.image.load("images/palm-min.png").convert_alpha()
-palm2Surface = pygame.image.load("images/palm2-min.png").convert_alpha()
-palmRect = Environment(palmSurface.get_rect(topleft=(width+randint(0,500),height - 200)), palmSurface, "palm1")
-palm2Rect = Environment(palm2Surface.get_rect(topleft=(width + randint(1000,2500),height - 200)), palm2Surface, "palm2")
-palm2Rect.speed = (475,0)
-palmRect.speed = (475,0)
+palm_surface = pygame.image.load("images/palm-min.png").convert_alpha()
+palm_2_surface = pygame.image.load("images/palm2-min.png").convert_alpha()
+palm_rect = Environment(palm_surface.get_rect(
+                                            topleft=(
+                                                    width+randint(0,500),
+                                                    height - 200
+                                                    )
+                                                ),
+                                                palm_surface, "palm1"
+                                            )
+palm_2_rect = Environment(palm_2_surface.get_rect(
+                                                topleft=(
+                                                        width + randint(1000,2500),
+                                                        height - 200
+                                                        )
+                                                    ),
+                                                    palm_2_surface, "palm2"
+                                            )
+palm_2_rect.speed = (475,0)
+palm_rect.speed = (475,0)
 ######################
 #LES TYPES DE CLASSES#
 ######################
-sonicJumpRect = Sonic(sonicJumpSurface.get_rect(topleft=(100,height - 200 - 144*4)))
-sonic1Rect = Sonic(statesSonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
+sonic_jump_rect = Sonic(sonic_jump_surface.get_rect(topleft=(100,height - 200 - 144*4)))
+sonic_1_rect = Sonic(states_sonic[0][0].get_rect(topleft=(100,height - 200 - 144)))
 ################
 #LES TYPES RECT#
 ################
-heartRect = heartSurface.get_rect(topleft=(65,65))
+heart_rect = heart_surface.get_rect(topleft=(65,65))
 #rect qui restreint le personnage
-sonicRect = pygame.Rect((100,200), (128,height - 400))
+sonic_rect = pygame.Rect((100,200), (128,height - 400))
 
 ##########
 #LES SONS#
 ##########
-healingPath = "sounds/healing.wav"
-jumpPath = "sounds/jump.mp3"
-damagePath = "sounds/damage.wav"
-lostPath = "sounds/lost.wav"
-scorePath = "sounds/score.wav"
-score1000Path = "sounds/bestscore.wav"
-bestScorePath = "sounds/bestScore.wav"
-mainMusic = "sounds/mainMusic.wav"
-playingMusic = "sound/playingMusic.wav"
+HEALINGPATH = "sounds/healing.wav"
+JUMPPATH = "sounds/jump.mp3"
+DAMAGEPATH = "sounds/damage.wav"
+LOSTPATH = "sounds/lost.wav"
+SCOREPATH = "sounds/score.wav"
+SCORE1000PATH = "sounds/best_score.wav"
+BESTSCOREPATH = "sounds/best_score.wav"
+MAINMUSIC = "sounds/mainMusic.wav"
 ####################
 #TEXTES SUR L'ECRAN#
 ####################
 
 scoreTimer = time()
-fontPath = "font/BACKTO1982.TTF"
-scoreFont = pygame.font.Font(fontPath, 40)
-bigFont = pygame.font.Font(fontPath, width // 30)
-scoreLiveFont = pygame.font.Font(fontPath, 150) 
-scoreSurface = scoreLiveFont.render("{0}".format(0), True, (0,0,0))
-lastScoreSurface = scoreFont.render("Last score : {0}".format(0), True, (0,0,0))
-lastScoreRect = lastScoreSurface.get_rect(midtop=(width/2, 100))
-bestScoreSurface = scoreFont.render("Best score : {0}".format(bestScore), True, (0,0,0))
-bestScoreRect = bestScoreSurface.get_rect(midtop=(width/2, 25))
-restartSurface = bigFont.render("PRESS SPACE TO START", True, (255,10,10))
-restartRect = restartSurface.get_rect(midtop=(width/2,height/2))
+FONTPATH = "font/BACKTO1982.TTF"
+score_font = pygame.font.Font(FONTPATH, 40)
+big_font = pygame.font.Font(FONTPATH, width // 30)
+score_live_font = pygame.font.Font(FONTPATH, 150)
+score_surface = score_live_font.render("0", True, (0,0,0))
+last_score_surface = score_font.render(f"Last score : {0}", True, (0,0,0))
+last_score_rect = last_score_surface.get_rect(midtop=(width/2, 100))
+best_score_surface = score_font.render(f"Best score : {BESTSCORE}", True, (0,0,0))
+best_score_rect = best_score_surface.get_rect(midtop=(width/2, 25))
+restart_surface = big_font.render("PRESS SPACE TO START", True, (255,10,10))
+restart_rect = restart_surface.get_rect(midtop=(width/2,height/2))
 
 #bouton pour fermer la fenetre
-endFont = pygame.font.Font(fontPath, 50)
-endSurface = endFont.render("CLOSE", True, (0,0,0))
-endRect = endSurface.get_rect(topright=(width - 10,10))
+end_font = pygame.font.Font(FONTPATH, 50)
+end_surface = end_font.render("CLOSE", True, (0,0,0))
+end_rect = end_surface.get_rect(topright=(width - 10,10))
 
-#bouton bestscores screen
-scoresScreenSurface = endFont.render("HIGHSCORES", True, (0,0,0))
-scoresScreenRect = scoresScreenSurface.get_rect(topright=(width - 10,75))
-
-#exit button
-exitSurface = endFont.render("EXIT", True, (0,0,0))
-exitRect = exitSurface.get_rect(topleft=(10,10))
-
+#bouton best_scores screen
+scores_screen_surface = end_font.render("HIGHSCORES", True, (0,0,0))
+scores_screen_rect = scores_screen_surface.get_rect(topright=(width - 10,75))
 #écran de fin
-gameOverSurface = scoreLiveFont.render("GAME OVER".format(0), True, (0,0,0))
-gameOverRect = gameOverSurface.get_rect(midtop = (width / 2, height / 2 - gameOverSurface.get_size()[1] / 2))
-
+game_over_surface = score_live_font.render("GAME OVER", True, (0,0,0))
+game_over_rect = game_over_surface.get_rect(
+                                            midtop = (
+                                                    width / 2,
+                                                    height / 2 - game_over_surface.get_size()[1] / 2
+                                                    )
+                                            )
 #pseudo
-pseudoFont = pygame.font.Font(fontPath, int(width // 3 // len(name)))
-pseudoSurface = pseudoFont.render("{0}".format(name), True, (0,0,0))
-pseudoRect = pseudoSurface.get_rect(topleft = (30,30))
+pseudo_font = pygame.font.Font(FONTPATH, int(width // 3 // len(NAMEID)))
+pseudo_surface = pseudo_font.render(f"{NAMEID}", True, (0,0,0))
+pseudo_rect = pseudo_surface.get_rect(topleft = (30,30))
 
 #background music
+pygame.mixer.init()
 pygame.mixer.music.load("sounds/mainMusic.wav")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.18)
-
-

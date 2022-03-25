@@ -1,46 +1,54 @@
-import pygame
-from classes.Entity import Entity
+"""environment class"""
 from random import randint
+import pygame
+from classes.entity import Entity
 height = pygame.display.get_desktop_sizes()[0][1]
 width = pygame.display.get_desktop_sizes()[0][0]
 
 
 class Environment (Entity):
-    def __init__(self,rect, surface, type):
+    """init an environment entity"""
+    def __init__(self,rect, surface, category):
         Entity.__init__(self, rect)
         self.surface = surface
-        self.type = type
+        self.category = category
+        self.speed = (0,0)
+        self.position = self.rect.topleft
+
     def loop(self):
-        x,y = self.position
-        w = self.rect.size[0]
-        if x + w < 0:
+        """reset width pos when reaching end of the screen"""
+        pos_x,_ = self.position
+        width_entity = self.rect.size[0]
+        if pos_x + width_entity < 0:
             return True
         return False
-    
-    def getRandPos(self):
-        if self.type == "cloud1" or self.type == "palm1":
-            self.randX = randint(0,500)
-            if self.type == "palm1":
-                self.randY = height - 200
-            else:
-                self.randY = randint(200,height / 2)
-        elif self.type == "cloud2" or self.type == "palm2":
-            self.randX = randint(1000,2500)
-            if self.type == "palm2":
-                self.randY = height - 200
-            else:
-                self.randY = randint(200,height / 2)
-        else:
-            self.randX = 0
-            self.randY = 0
-        return self.randX, self.randY
 
-    def animate(self,speedX, speedY, tick, screen):
-        self.speed = (speedX,speedY)
+    def get_rand_pos(self):
+        """return a random pos"""
+        if self.category in ("cloud1","palm1"):
+            rand_x = randint(0,500)
+            if self.category == "palm1":
+                rand_y = height - 200
+            else:
+                rand_y = randint(200,height / 2)
+        elif self.category in ("cloud2","palm2"):
+            rand_x = randint(1000,2500)
+            if self.category == "palm2":
+                rand_y = height - 200
+            else:
+                rand_y = randint(200,height / 2)
+        else:
+            rand_x = 0
+            rand_y = 0
+        return rand_x, rand_y
+
+    def animate(self,speed_x, speed_y, tick, screen):
+        """moving the entity"""
+        self.speed = (speed_x,speed_y)
         if self.loop():
-            if self.type == "grass":
+            if self.category == "grass":
                 self.position = (width,height)
             else:
-                self.position = (width + self.getRandPos()[0],self.getRandPos()[1])
-        self.changePosition(tick)
+                self.position = (width + self.get_rand_pos()[0],self.get_rand_pos()[1])
+        self.change_position(tick)
         screen.blit(self.surface,self.rect)
