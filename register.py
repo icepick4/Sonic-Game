@@ -61,7 +61,7 @@ SCORE = 0
 try:
     with open("best_score.pickle", "rb") as f:
         scores = pickle.load(f)
-except FileNotFoundError:
+except EOFError:
     scores = {}
     with open("best_score.pickle", "wb") as f:
         pickle.dump(scores, f)
