@@ -2,8 +2,8 @@
 from time import time
 from random import randint
 import pygame
-from classes.sonic import Sonic
-from classes.environment import Environment
+from sonic import Sonic
+from environment import Environment
 from register import width, height, BESTSCORE, NAMEID
 
 
@@ -51,18 +51,18 @@ DUCKSTATE = 0
 ############
 #personnage en gif
 #tableau des états de sonic : tab[0][i] -> état de saut, tab[1][i] -> état de standing
-states_sonic = [[0,0,0,0],[0,0]]
-states_sonic[0][0] = pygame.image.load("images/sonic1.gif").convert_alpha()
-states_sonic[0][1] = pygame.image.load("images/sonic2.gif").convert_alpha()
-states_sonic[0][2] = pygame.image.load("images/sonic3.gif").convert_alpha()
-states_sonic[0][3] = pygame.image.load("images/sonic4.gif").convert_alpha()
-states_sonic[1][0] = pygame.image.load("images/sonicStanding1.gif").convert_alpha()
-states_sonic[1][1] = pygame.image.load("images/sonicStanding2.gif").convert_alpha()
+states_sonic = [[],[]]
+states_sonic[0].append(pygame.image.load("images/sonic1.gif").convert_alpha())
+states_sonic[0].append(pygame.image.load("images/sonic2.gif").convert_alpha())
+states_sonic[0].append(pygame.image.load("images/sonic3.gif").convert_alpha())
+states_sonic[0].append(pygame.image.load("images/sonic4.gif").convert_alpha())
+states_sonic[1].append(pygame.image.load("images/sonicStanding1.gif").convert_alpha())
+states_sonic[1].append(pygame.image.load("images/sonicStanding2.gif").convert_alpha())
 
 #le canard en gif
-states_duck = [0,0]
-states_duck[0] = pygame.image.load("images/duck1.png").convert_alpha()
-states_duck[1] = pygame.image.load("images/duck2.png").convert_alpha()
+states_duck = []
+states_duck.append(pygame.image.load("images/duck1.png").convert_alpha())
+states_duck.append(pygame.image.load("images/duck2.png").convert_alpha())
 #init des enemies
 enemy_spike_surface = pygame.image.load("images/spike.png").convert_alpha()
 enemy_bird_surface = pygame.image.load("images/bird.png").convert_alpha()

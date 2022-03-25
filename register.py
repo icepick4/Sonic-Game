@@ -59,11 +59,11 @@ REGISTERED = False
 #init du bestscore
 SCORE = 0
 try:
-    with open("bestScore.pickle", "rb") as f:
+    with open("best_score.pickle", "rb") as f:
         scores = pickle.load(f)
 except FileNotFoundError:
     scores = {}
-    with open("bestScore.pickle", "wb") as f:
+    with open("best_score.pickle", "wb") as f:
         pickle.dump(scores, f)
 
 for key,value in scores.items():
