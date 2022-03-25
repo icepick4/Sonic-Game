@@ -1,19 +1,19 @@
-import pygame
+"""file containing functions"""
 from time import time
+import pygame
 
-def animateGif(delay, nbImages, timeGif, state):
-    delayGif = time() - timeGif
-    if delayGif > delay:
+def animate_gif(delay, nb_images, time_gif, state):
+    """animate the gif"""
+    delay_gif = time() - time_gif
+    if delay_gif > delay:
         state += 1
-        timeGif = time()
-    if state == nbImages:
+        time_gif = time()
+    if state == nb_images:
         state = 0
-    return timeGif, state
+    return time_gif, state
 
-def playSound(path, volume):
-    Sound = pygame.mixer.Sound(path)
-    Sound.play()
-    Sound.set_volume(volume)
-
-
-    
+def play_sound(path, volume):
+    """play a sound"""
+    sound = pygame.mixer.Sound(path)
+    sound.play()
+    sound.set_volume(volume)
