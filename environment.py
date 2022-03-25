@@ -1,7 +1,7 @@
 """environment class"""
 from random import randint
 import pygame
-from classes.entity import Entity
+from entity import Entity
 height = pygame.display.get_desktop_sizes()[0][1]
 width = pygame.display.get_desktop_sizes()[0][0]
 

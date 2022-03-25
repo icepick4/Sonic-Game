@@ -1,6 +1,7 @@
 """main page"""
 from time import time
 from random import randint,uniform
+from enemy import Enemy
 from register import (
                         width,
                         height,
@@ -83,7 +84,6 @@ except ModuleNotFoundError:
     print("""Vous n'avez pas téléchargé le module pygame ! \n
         Téléchargez le avec la commande ci-contre : pip install pygame""")
 from functions import animate_gif, play_sound
-from classes.enemy import Enemy
 
 while PLAYING:
     ACCELERATION = SCORE / 2
@@ -168,7 +168,6 @@ while PLAYING:
                                     rock_surface, "littleMob")
                                 )
             elif 2 < rand <= 4:
-                print(type(states_duck[DUCKSTATE]))
                 enemies.append(Enemy(
                                     states_duck[DUCKSTATE].get_rect(topleft=(
                                                                         width,
@@ -394,7 +393,7 @@ while PLAYING:
         else:
             screen.blit(
                         states_sonic[1][SONICSTANDINGSTATE],
-                        (100,height - 200 - states_sonic[1][0].get_height())
+                        (100,height - 200 - 248)
                     )
             screen.blit(restart_surface,restart_rect)
             time_gif, SONICSTANDINGSTATE = animate_gif(0.3,2,time_gif, SONICSTANDINGSTATE)

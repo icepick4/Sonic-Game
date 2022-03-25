@@ -1,6 +1,6 @@
 """Class enemy"""
 from random import randint, choice
-from classes.entity import Entity
+from entity import Entity
 
 
 class Enemy(Entity):

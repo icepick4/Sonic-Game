@@ -14,11 +14,11 @@ def get_scores(sorted_scores):
             ctr_surface = big_font.render(f"{ctr+1}", True, (97,78,26))
         else:
             ctr_surface = big_font.render(f"{ctr+1}", True, (0,0,0))
-        ctr_rect = ctr_surface.get_rect(topleft = (15, (height / 5) * ctr + (height / 5) / 2))
+        ctr_rect = ctr_surface.get_rect(topleft = (15, (height / 6.5) * ctr + (height / 4.5)))
         id_surface = big_font.render(f"{key}", True, (0,0,0))
-        id_rect = id_surface.get_rect(topleft=(111, (height / 5) * ctr + (height / 5) / 2))
+        id_rect = id_surface.get_rect(topleft=(111, (height / 6.5) * ctr + (height / 4.5)))
         score_surface = big_font.render(f"{value}", True, (0,0,0))
-        score_rect=score_surface.get_rect(topright=(width-15,(height/5)*ctr+(height / 5) / 2))
+        score_rect=score_surface.get_rect(topright=(width-15,(height/6.5)*ctr+(height / 4.5)))
         ctr+=1
         screen.blit(ctr_surface, ctr_rect)
         screen.blit(id_surface, id_rect)
@@ -36,11 +36,11 @@ def screen_scores(looping):
     while looping:
         screen.fill((150,150,150))
         for event in pygame.event.get():
-            width_restriction = exit_rect.left < event.pos[0] < exit_rect.right
-            height_restriction = exit_rect.top < event.pos[1] < exit_rect.bottom
             if event.type == 256:
                 looping = False
             elif event.type == 1024:
+                width_restriction = exit_rect.left < event.pos[0] < exit_rect.right
+                height_restriction = exit_rect.top < event.pos[1] < exit_rect.bottom
                 if width_restriction and height_restriction:
                     exit_surface = big_font.render("EXIT", True, (255,60,60))
                 else:
