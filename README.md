@@ -13,6 +13,12 @@
 - The best score (one best score per player registered) is saved in "bestScore.pickle" 
 - The game depends of the Pygame module
 
+## Run the game
+
+```
+python main.py
+```
+
 ## Screenshots
 
 While logging :
